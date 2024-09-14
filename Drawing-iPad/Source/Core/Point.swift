@@ -11,3 +11,9 @@ struct Point {
     private var x: Double
     private var y: Double
 }
+
+extension Point: CustomStringConvertible {
+    var description: String {
+        "X: \(self.x), Y: \(self.y)"
+    }
+}

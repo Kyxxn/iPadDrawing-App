@@ -8,6 +8,7 @@
 import Foundation
 
 final class Rectangle {
+    
     private let identifier: String
     private var origin: Point
     private var size: Size
@@ -26,5 +27,11 @@ final class Rectangle {
         self.size = size
         self.color = color
         self.alpha = alpha
+    }
+}
+
+extension Rectangle: CustomStringConvertible {
+    var description: String {
+        "[\(self.identifier)] \(origin), \(size), \(color), \(alpha)"
     }
 }

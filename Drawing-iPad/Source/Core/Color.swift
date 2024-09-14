@@ -12,4 +12,11 @@ struct Color {
     private var red: UInt8
     private var green: UInt8
     private var blue: UInt8
+    
+}
+
+extension Color: CustomStringConvertible {
+    var description: String {
+        "R: \(self.red), G: \(self.green), B: \(self.blue)"
+    }
 }
