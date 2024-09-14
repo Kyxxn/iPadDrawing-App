@@ -9,20 +9,18 @@ import Foundation
 
 final class Rectangle {
     
-    private let identifier: String
+    private let identifier = UUID()
     private var origin: Point
     private var size: Size
     private var color: Color
     private var alpha: Alpha
     
     init(
-        identifier: String,
         origin: Point,
         size: Size,
         color: Color,
         alpha: Alpha
     ) {
-        self.identifier = identifier
         self.origin = origin
         self.size = size
         self.color = color
@@ -32,6 +30,6 @@ final class Rectangle {
 
 extension Rectangle: CustomStringConvertible {
     var description: String {
-        "[\(self.identifier)] \(origin), \(size), \(color), \(alpha)"
+        "[\(self.identifier)]\n: \(origin), \(size), \(color), \(alpha)\n"
     }
 }

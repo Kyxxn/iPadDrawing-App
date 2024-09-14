@@ -10,10 +10,15 @@ import Foundation
 struct Size {
     private var width: Double
     private var height: Double
+    
+    init(width: Double, height: Double) {
+        self.width = width
+        self.height = height
+    }
 }
 
 extension Size: CustomStringConvertible {
     var description: String {
-        "W: \(self.width), H: \(self.height)"
+        "W: \(String(format: "%.2f", self.width)), H: \(String(format: "%.2f", self.height))"
     }
 }

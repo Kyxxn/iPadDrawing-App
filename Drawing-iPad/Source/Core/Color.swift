@@ -13,10 +13,19 @@ struct Color {
     private var green: UInt8
     private var blue: UInt8
     
+    init(red: UInt8, green: UInt8, blue: UInt8) {
+        self.red = red
+        self.green = green
+        self.blue = blue
+    }
 }
 
 extension Color: CustomStringConvertible {
     var description: String {
-        "R: \(self.red), G: \(self.green), B: \(self.blue)"
+        return "R: \(self.red), G: \(self.green), B: \(self.blue)"
+    }
+    
+    var toHexCode: String {
+        return String(format: "#%02X%02X%02X", red, green, blue)
     }
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum Alpha: Int {
+enum Alpha: Int, CaseIterable {
     case one = 1, two, three, four, five, six, seven, eight, nine, ten
     
 }
