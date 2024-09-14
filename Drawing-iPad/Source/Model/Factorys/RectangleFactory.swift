@@ -10,8 +10,8 @@ import Foundation
 struct RectangleFactory {
     let planeSize: CGSize
     
-    init(planeSize: CGSize) {
-        self.planeSize = planeSize
+    init(viewBoundsSize: CGSize) {
+        self.planeSize = viewBoundsSize
     }
     
     func makeRectangle() -> Rectangle {
