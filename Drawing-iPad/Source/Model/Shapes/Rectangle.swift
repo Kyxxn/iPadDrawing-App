@@ -26,6 +26,10 @@ final class Rectangle {
         self.color = color
         self.alpha = alpha
     }
+    
+    func originValue() -> Point {
+        return self.origin
+    }
 }
 
 extension Rectangle: CustomStringConvertible {
