@@ -16,7 +16,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: windowScene)
         
         window?.rootViewController = CanvasViewController()
-        window?.windowScene = windowScene
         window?.makeKeyAndVisible()
     }
 }
