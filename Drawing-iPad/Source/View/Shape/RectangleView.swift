@@ -9,6 +9,7 @@ import UIKit
 
 final class RectangleView: UIView {
     func setupFromModel(rectangle: Rectangle) {
+        self.translatesAutoresizingMaskIntoConstraints = false
         self.frame.origin = rectangle.origin.toCGPoint
         self.frame.size = rectangle.size.toCGSize
         self.backgroundColor = UIColor(

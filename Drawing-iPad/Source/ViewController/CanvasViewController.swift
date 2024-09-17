@@ -22,7 +22,7 @@ final class CanvasViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        factory = RectangleFactory(viewBoundsSize: view.bounds.size)
+        factory = RectangleFactory(viewBoundsSize: canvasView.planeViewBoundsSize())
     }
     
     private func setupConfiguration() {

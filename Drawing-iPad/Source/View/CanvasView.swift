@@ -68,6 +68,10 @@ final class CanvasView: UIView {
             rectangleView.heightAnchor.constraint(equalToConstant: rectangleView.frame.height)
         ])
     }
+    
+    func planeViewBoundsSize() -> CGSize {
+        return planeView.bounds.size
+    }
 }
 
 extension CanvasView: ShapeCreatorButtonDelegate {
