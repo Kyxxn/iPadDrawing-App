@@ -10,6 +10,7 @@ import UIKit
 final class SideView: UIView {
     private let backgroundInfoLabel = SideInfoLabel(text: "배경색")
     private let backgroundColorChangeButton = BackgroundColorChangeButton()
+    private let alphaSlider = AlphaSlider()
     private let verticalStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -34,8 +35,9 @@ final class SideView: UIView {
         self.translatesAutoresizingMaskIntoConstraints = false
         self.backgroundColor = .systemGray5
         self.addSubview(verticalStackView)
-        verticalStackView.addArrangedSubview(backgroundInfoLabel)
-        verticalStackView.addArrangedSubview(backgroundColorChangeButton)
+        [backgroundInfoLabel, backgroundColorChangeButton, alphaSlider].forEach {
+            verticalStackView.addArrangedSubview($0)
+        }
         
         NSLayoutConstraint.activate([
             verticalStackView.topAnchor.constraint(equalTo: self.topAnchor, constant: 30),
@@ -44,7 +46,8 @@ final class SideView: UIView {
             
             backgroundInfoLabel.widthAnchor.constraint(equalToConstant: 160),
             backgroundColorChangeButton.widthAnchor.constraint(equalToConstant: 160),
-            backgroundColorChangeButton.heightAnchor.constraint(equalToConstant: 50)
+            backgroundColorChangeButton.heightAnchor.constraint(equalToConstant: 50),
+            alphaSlider.widthAnchor.constraint(equalToConstant: 160),
         ])
     }
 }
