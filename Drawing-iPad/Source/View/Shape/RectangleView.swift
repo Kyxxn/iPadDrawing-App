@@ -13,9 +13,9 @@ final class RectangleView: UIView {
         self.frame.origin = rectangle.origin.toCGPoint
         self.frame.size = rectangle.size.toCGSize
         self.backgroundColor = UIColor(
-            red: CGFloat(rectangle.color.red) / 255.0 ,
-            green: CGFloat(rectangle.color.green) / 255.0 ,
-            blue: CGFloat(rectangle.color.blue) / 255.0 ,
+            red: CGFloat(rectangle.color.red) / 255.0,
+            green: CGFloat(rectangle.color.green) / 255.0,
+            blue: CGFloat(rectangle.color.blue) / 255.0,
             alpha: rectangle.alpha.toCGFloat
         )
     }
