@@ -21,4 +21,8 @@ extension Size: CustomStringConvertible {
     var description: String {
         "W: \(String(format: "%.2f", self.width)), H: \(String(format: "%.2f", self.height))"
     }
+    
+    var toCGSize: CGSize {
+        CGSize(width: self.width, height: self.height)
+    }
 }

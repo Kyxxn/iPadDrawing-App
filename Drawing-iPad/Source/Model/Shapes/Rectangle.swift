@@ -10,10 +10,10 @@ import Foundation
 final class Rectangle {
     
     private let identifier = UUID()
-    private var origin: Point
-    private var size: Size
-    private var color: Color
-    private var alpha: Alpha
+    private(set) var origin: Point
+    private(set) var size: Size
+    private(set) var color: Color
+    private(set) var alpha: Alpha
     
     init(
         origin: Point,
@@ -25,10 +25,6 @@ final class Rectangle {
         self.size = size
         self.color = color
         self.alpha = alpha
-    }
-    
-    func originValue() -> Point {
-        return self.origin
     }
 }
 

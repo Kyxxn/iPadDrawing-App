@@ -7,7 +7,13 @@
 
 import UIKit
 
+protocol CanvasViewDelegate: AnyObject {
+    func didTapShapeButtonInCanvasView(_ canvasView: CanvasView)
+}
+
 final class CanvasView: UIView {
+    weak var delegate: CanvasViewDelegate?
+    
     private let rectangleButton = ShapeCreatorButton(name: "사각형")
     private let sideView = SideView()
     private let planeView: UIView = {
@@ -19,6 +25,7 @@ final class CanvasView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        rectangleButton.delegate = self
         setupConfiguration()
     }
     
@@ -49,5 +56,23 @@ final class CanvasView: UIView {
             planeView.topAnchor.constraint(equalTo: self.topAnchor),
             planeView.trailingAnchor.constraint(equalTo: self.sideView.leadingAnchor)
         ])
+    }
+    
+    func addRectangle(rectangleView: RectangleView) {
+        planeView.addSubview(rectangleView)
+        
+        NSLayoutConstraint.activate([
+            rectangleView.leadingAnchor.constraint(equalTo: planeView.leadingAnchor, constant: rectangleView.frame.origin.x),
+            rectangleView.topAnchor.constraint(equalTo: planeView.topAnchor, constant: rectangleView.frame.origin.y),
+            rectangleView.widthAnchor.constraint(equalToConstant: rectangleView.frame.width),
+            rectangleView.heightAnchor.constraint(equalToConstant: rectangleView.frame.height)
+        ])
+    }
+}
+
+extension CanvasView: ShapeCreatorButtonDelegate {
+    func didTapShapeButton(_ button: ShapeCreatorButton) {
+        print("캔버스뷰 델리게이트")
+        delegate?.didTapShapeButtonInCanvasView(self)
     }
 }

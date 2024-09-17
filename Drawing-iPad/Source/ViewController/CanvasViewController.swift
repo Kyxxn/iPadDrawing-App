@@ -8,12 +8,13 @@
 import UIKit
 
 final class CanvasViewController: UIViewController {
-
     private let canvasView = CanvasView()
+    private var factory: RectangleFactory?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        canvasView.delegate = self
         
         setupConfiguration()
     }
@@ -21,11 +22,7 @@ final class CanvasViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        let factory = RectangleFactory(viewBoundsSize: view.bounds.size)
-        print(factory.makeRectangle())
-        print(factory.makeRectangle())
-        print(factory.makeRectangle())
-        print(factory.makeRectangle())
+        factory = RectangleFactory(viewBoundsSize: view.bounds.size)
     }
     
     private func setupConfiguration() {
@@ -39,3 +36,15 @@ final class CanvasViewController: UIViewController {
     }
 }
 
+extension CanvasViewController: CanvasViewDelegate {
+    func didTapShapeButtonInCanvasView(_ canvasView: CanvasView) {
+        let rectangle = factory?.makeRectangle()
+        createRectangle(rectangle)
+    }
+    private func createRectangle(_ rectangle: Rectangle?) {
+        guard let rectangle = rectangle else { return }
+        let rectangleView = RectangleView()
+        rectangleView.setupFromModel(rectangle: rectangle)
+        canvasView.addRectangle(rectangleView: rectangleView)
+    }
+}
