@@ -55,6 +55,11 @@ final class SideView: UIView {
         backgroundColorChangeButton.setTitle("None", for: .normal)
         alphaSlider.isEnabled = false
     }
+    
+    func updateRectangleInfo(rectangle: Rectangle) {
+        backgroundColorChangeButton.setTitle(rectangle.color.toHexCode,
+                                             for: .normal)
+        alphaSlider.isEnabled = true
+        alphaSlider.value = rectangle.alpha.toFloat
+    }
 }
-
-// TODO: 버튼 누르면 선택되게, 탭제스쳐를 ShapeView에 넣을지 CanvasView에 넣을지 고민해보기
