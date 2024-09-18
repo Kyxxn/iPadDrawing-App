@@ -9,7 +9,7 @@ import UIKit
 
 protocol CanvasViewDelegate: AnyObject {
     func didTapShapeButtonInCanvasView(_ canvasView: CanvasView)
-    func didTapGestureRectangle(_ canvasView: CanvasView, rectangleViewIndex: Int)
+    func didTapGestureRectangle(_ canvasView: CanvasView, rectangleID: UUID)
 }
 
 final class CanvasView: UIView {
@@ -73,6 +73,12 @@ final class CanvasView: UIView {
     func planeViewBoundsSize() -> CGSize {
         return planeView.bounds.size
     }
+    
+    func rectangleView(withID id: UUID) -> RectangleView? {
+        return planeView.subviews
+            .compactMap { $0 as? RectangleView }
+            .first { $0.rectangleID == id }
+    }
 }
 
 // MARK: - ShapeCreatorButtonDelegate
@@ -89,11 +95,7 @@ extension CanvasView: ShapeCreatorButtonDelegate {
 extension CanvasView: RectangleTapGestureDelegate {
     func didTapRectangleGesture(_ rectangleView: RectangleView) {
         print("CanvasView - didTapRectangleGesture")
-        let rectangleViewIndex = planeView.subviews.firstIndex {
-            $0 == rectangleView
-        }
-        guard let index = rectangleViewIndex else { return }
-        delegate?.didTapGestureRectangle(self, rectangleViewIndex: index)
+        delegate?.didTapGestureRectangle(self, rectangleID: rectangleView.rectangleID)
     }
     
     func updateSideView(rectangle: Rectangle) {

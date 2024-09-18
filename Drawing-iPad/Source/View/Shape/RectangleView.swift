@@ -13,8 +13,11 @@ protocol RectangleTapGestureDelegate: AnyObject {
 
 final class RectangleView: UIView {
     weak var delegate: RectangleTapGestureDelegate?
+    let rectangleID: UUID
     
     init() {
+    init(rectangleID: UUID) {
+        self.rectangleID = rectangleID
         super.init(frame: .zero)
         setupConfiguration()
     }

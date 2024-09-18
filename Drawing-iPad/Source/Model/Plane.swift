@@ -29,6 +29,10 @@ final class Plane {
             $0.origin == origin
         }
     }
+    
+    func rectangle(withID identifier: UUID) -> Rectangle? {
+        return rectangles.first { $0.identifier == identifier }
+    }
 }
 
 // MARK: - Subscript 구현

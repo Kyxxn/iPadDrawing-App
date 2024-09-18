@@ -8,8 +8,7 @@
 import Foundation
 
 final class Rectangle {
-    
-    private let identifier = UUID()
+    let identifier = UUID()
     private(set) var origin: Point
     private(set) var size: Size
     private(set) var color: Color
