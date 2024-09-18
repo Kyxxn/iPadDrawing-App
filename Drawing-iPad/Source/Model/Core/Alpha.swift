@@ -16,4 +16,12 @@ extension Alpha: CustomStringConvertible {
     var description: String {
         String(self.rawValue)
     }
+    
+    var toFloat: Float {
+        Float(self.rawValue) / 10
+    }
+    
+    var toCGFloat: CGFloat {
+        CGFloat(self.rawValue) / 10
+    }
 }

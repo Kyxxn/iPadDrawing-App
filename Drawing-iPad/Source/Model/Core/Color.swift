@@ -9,9 +9,9 @@ import Foundation
 
 /// UInt8로 하여 0~255를 컴파일 시점에서 제어함
 struct Color {
-    private var red: UInt8
-    private var green: UInt8
-    private var blue: UInt8
+    private(set) var red: UInt8
+    private(set) var green: UInt8
+    private(set) var blue: UInt8
     
     init(red: UInt8, green: UInt8, blue: UInt8) {
         self.red = red

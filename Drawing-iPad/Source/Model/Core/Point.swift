@@ -21,4 +21,8 @@ extension Point: CustomStringConvertible {
     var description: String {
         "X: \(String(format: "%.2f", self.x)), Y: \(String(format: "%.2f", self.y))"
     }
+    
+    var toCGPoint: CGPoint {
+        CGPoint(x: self.x, y: self.y)
+    }
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum RandomFactory {    
+enum RandomFactory {
     static func makeRandomOrigin(size: CGSize) -> Point {
         let maxX = size.width - 150
         let maxY = size.height - 150

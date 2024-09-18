@@ -26,7 +26,7 @@ final class Plane {
     
     func containsRectangle(at origin: Point) -> Bool {
         self.rectangles.contains {
-            $0.originValue() == origin
+            $0.origin == origin
         }
     }
 }
