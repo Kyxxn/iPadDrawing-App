@@ -18,7 +18,7 @@ extension Alpha: CustomStringConvertible {
     }
     
     var toFloat: Float {
-        Float(self.rawValue) / 10
+        Float(self.rawValue)
     }
     
     var toCGFloat: CGFloat {
