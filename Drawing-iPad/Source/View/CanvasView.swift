@@ -9,6 +9,9 @@ import UIKit
 
 protocol CanvasViewDelegate: AnyObject {
     func didTapShapeButtonInCanvasView(_ canvasView: CanvasView)
+    func didTapGestureRectangle(_ canvasView: CanvasView, rectangleID: UUID)
+    func didTapBackgroundColorChangeButton(_ canvasView: CanvasView)
+    func didChangeAlphaSlider(_ canvasView: CanvasView, changedValue: Float)
 }
 
 final class CanvasView: UIView {
@@ -25,6 +28,7 @@ final class CanvasView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         rectangleButton.delegate = self
+        sideView.delegate = self
         setupConfiguration()
     }
     
@@ -58,6 +62,7 @@ final class CanvasView: UIView {
     }
     
     func addRectangle(rectangleView: RectangleView) {
+        rectangleView.delegate = self
         planeView.addSubview(rectangleView)
         
         NSLayoutConstraint.activate([
@@ -71,11 +76,43 @@ final class CanvasView: UIView {
     func planeViewBoundsSize() -> CGSize {
         return planeView.bounds.size
     }
+    
+    func rectangleView(withID id: UUID) -> RectangleView? {
+        return planeView.subviews
+            .compactMap { $0 as? RectangleView }
+            .first { $0.rectangleID == id }
+    }
 }
+
+// MARK: - ShapeCreatorButtonDelegate
 
 extension CanvasView: ShapeCreatorButtonDelegate {
     func didTapShapeButton(_ button: ShapeCreatorButton) {
         print("캔버스뷰 델리게이트")
         delegate?.didTapShapeButtonInCanvasView(self)
+    }
+}
+
+// MARK: - RectangleTapGestureDelegate
+
+extension CanvasView: RectangleTapGestureDelegate {
+    func didTapRectangleGesture(_ rectangleView: RectangleView) {
+        delegate?.didTapGestureRectangle(self, rectangleID: rectangleView.rectangleID)
+    }
+    
+    func updateSideView(rectangle: Rectangle) {
+        sideView.updateRectangleInfo(rectangle: rectangle)
+    }
+}
+
+// MARK: - SideViewDelegate
+
+extension CanvasView: SideViewDelegate {
+    func didTapBackgroundColorChangeButton(_ sideView: SideView) {
+        delegate?.didTapBackgroundColorChangeButton(self)
+    }
+    
+    func didChangeAlphaSlider(_ sideView: SideView, changedValue: Float) {
+        delegate?.didChangeAlphaSlider(self, changedValue: changedValue)
     }
 }

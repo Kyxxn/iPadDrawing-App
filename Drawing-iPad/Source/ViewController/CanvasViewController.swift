@@ -11,6 +11,7 @@ final class CanvasViewController: UIViewController {
     private let canvasView = CanvasView()
     private var factory: RectangleFactory?
     private let plane = Plane()
+    private var selectedRectangleView: RectangleView?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,18 +46,52 @@ extension CanvasViewController: CanvasViewDelegate {
         plane.appendRectangle(rectangle: rectangle)
         createRectangle(rectangle)
     }
+    
     private func createRectangle(_ rectangle: Rectangle) {
-        let rectangleView = RectangleView()
-        rectangleView.delegate = self
+        let rectangleView = RectangleView(rectangleID: rectangle.identifier)
         rectangleView.setupFromModel(rectangle: rectangle)
         canvasView.addRectangle(rectangleView: rectangleView)
     }
-}
-
-// MARK: - RectangleTapGestureDelegate
-
-extension CanvasViewController: RectangleTapGestureDelegate {
-    func didTapRectangleGesture(_ rectangleView: RectangleView) {
-        print("CanvasViewController - didTapRectangleGesture")
+    
+    func didTapGestureRectangle(_ canvasView: CanvasView,
+                                rectangleID: UUID) {
+        if let previousSelectedView = selectedRectangleView {
+            previousSelectedView.isSelected = false
+        }
+        
+        guard let rectangleView = canvasView.rectangleView(withID: rectangleID),
+              let rectangle = plane.rectangle(withID: rectangleID) else { return }
+        
+        rectangleView.isSelected = true
+        selectedRectangleView = rectangleView
+        
+        canvasView.updateSideView(rectangle: rectangle)
+    }
+    
+    func didTapBackgroundColorChangeButton(_ canvasView: CanvasView) {
+        guard let rectangleView = selectedRectangleView,
+              let rectangle = plane.rectangle(withID: rectangleView.rectangleID) else { return }
+        let newColor = RandomFactory.makeRandomColor()
+        
+        rectangleView.backgroundColor = UIColor(
+            red: CGFloat(newColor.red) / 255.0,
+            green: CGFloat(newColor.green) / 255.0,
+            blue: CGFloat(newColor.blue) / 255.0,
+            alpha: selectedRectangleView?.alpha ?? .zero
+        )
+        rectangle.updateColor(color: newColor)
+        canvasView.updateSideView(rectangle: rectangle)
+    }
+    
+    func didChangeAlphaSlider(_ canvasView: CanvasView, changedValue: Float) {
+        guard let rectangleView = selectedRectangleView,
+              let rectangle = plane.rectangle(withID: rectangleView.rectangleID) else { return }
+        rectangleView.alpha = CGFloat(changedValue) / 10.0
+        
+        if let newAlpha = Alpha.from(floatValue: changedValue) {
+            rectangle.updateAlpha(alpha: newAlpha)
+        } else {
+            print("변환 실패: \(changedValue)")
+        }
     }
 }

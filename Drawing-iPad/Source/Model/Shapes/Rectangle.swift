@@ -8,8 +8,7 @@
 import Foundation
 
 final class Rectangle {
-    
-    private let identifier = UUID()
+    let identifier = UUID()
     private(set) var origin: Point
     private(set) var size: Size
     private(set) var color: Color
@@ -24,6 +23,14 @@ final class Rectangle {
         self.origin = origin
         self.size = size
         self.color = color
+        self.alpha = alpha
+    }
+    
+    func updateColor(color: Color) {
+        self.color = color
+    }
+    
+    func updateAlpha(alpha: Alpha) {
         self.alpha = alpha
     }
 }
