@@ -11,7 +11,8 @@ final class CanvasViewController: UIViewController {
     private let canvasView = CanvasView()
     private var factory: RectangleFactory?
     private let plane = Plane()
-    
+    private var selectedRectangleView: RectangleView?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -52,8 +53,17 @@ extension CanvasViewController: CanvasViewDelegate {
     }
     
     func didTapGestureRectangle(_ canvasView: CanvasView,
-                                rectangleViewIndex: Int) {
-        guard let rectangle = plane[rectangleViewIndex] else { return }
+                                rectangleID: UUID) {
+        if let previousSelectedView = selectedRectangleView {
+            previousSelectedView.isSelected = false
+        }
+
+        guard let rectangleView = canvasView.rectangleView(withID: rectangleID),
+              let rectangle = plane.rectangle(withID: rectangleID) else { return }
+
+        rectangleView.isSelected = true
+        selectedRectangleView = rectangleView
+
         canvasView.updateSideView(rectangle: rectangle)
     }
 }
