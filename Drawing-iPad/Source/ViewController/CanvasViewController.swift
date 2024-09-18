@@ -10,6 +10,7 @@ import UIKit
 final class CanvasViewController: UIViewController {
     private let canvasView = CanvasView()
     private var factory: RectangleFactory?
+    private let plane = Plane()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,11 +41,11 @@ final class CanvasViewController: UIViewController {
 
 extension CanvasViewController: CanvasViewDelegate {
     func didTapShapeButtonInCanvasView(_ canvasView: CanvasView) {
-        let rectangle = factory?.makeRectangle()
+        guard let rectangle = factory?.makeRectangle() else { return }
+        plane.appendRectangle(rectangle: rectangle)
         createRectangle(rectangle)
     }
-    private func createRectangle(_ rectangle: Rectangle?) {
-        guard let rectangle = rectangle else { return }
+    private func createRectangle(_ rectangle: Rectangle) {
         let rectangleView = RectangleView()
         rectangleView.delegate = self
         rectangleView.setupFromModel(rectangle: rectangle)
