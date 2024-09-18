@@ -73,9 +73,6 @@ extension CanvasViewController: CanvasViewDelegate {
               let rectangle = plane.rectangle(withID: rectangleView.rectangleID) else { return }
         let newColor = RandomFactory.makeRandomColor()
         
-        print("didTapBackgroundColorChangeButton")
-        print(rectangle)
-        print(rectangleView)
         rectangleView.backgroundColor = UIColor(
             red: CGFloat(newColor.red) / 255.0,
             green: CGFloat(newColor.green) / 255.0,
@@ -83,25 +80,18 @@ extension CanvasViewController: CanvasViewDelegate {
             alpha: selectedRectangleView?.alpha ?? .zero
         )
         rectangle.updateColor(color: newColor)
-        print()
-        print(rectangle)
-        print(rectangleView)
+        canvasView.updateSideView(rectangle: rectangle)
     }
     
     func didChangeAlphaSlider(_ canvasView: CanvasView, changedValue: Float) {
-        print("didChangeAlphaSlider")
         guard let rectangleView = selectedRectangleView,
               let rectangle = plane.rectangle(withID: rectangleView.rectangleID) else { return }
         rectangleView.alpha = CGFloat(changedValue) / 10.0
-        print(rectangle)
-        print(rectangleView)
+        
         if let newAlpha = Alpha.from(floatValue: changedValue) {
             rectangle.updateAlpha(alpha: newAlpha)
         } else {
             print("변환 실패: \(changedValue)")
         }
-        print()
-        print(rectangle)
-        print(rectangleView)
     }
 }
