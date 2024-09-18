@@ -10,6 +10,11 @@ import Foundation
 enum Alpha: Int, CaseIterable {
     case one = 1, two, three, four, five, six, seven, eight, nine, ten
     
+    static func from(floatValue: Float) -> Alpha? {
+        let scaledValue = floatValue * 10
+        let rawValue = max(1, min(10, Int(round(scaledValue))))
+        return Alpha(rawValue: rawValue)
+    }
 }
 
 extension Alpha: CustomStringConvertible {

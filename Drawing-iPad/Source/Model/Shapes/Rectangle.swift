@@ -25,6 +25,14 @@ final class Rectangle {
         self.color = color
         self.alpha = alpha
     }
+    
+    func updateColor(color: Color) {
+        self.color = color
+    }
+    
+    func updateAlpha(alpha: Alpha) {
+        self.alpha = alpha
+    }
 }
 
 extension Rectangle: CustomStringConvertible {
