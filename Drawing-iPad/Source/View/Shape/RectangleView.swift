@@ -7,7 +7,33 @@
 
 import UIKit
 
+protocol RectangleTapGestureDelegate: AnyObject {
+    func didTapRectangleGesture(_ rectangleView: RectangleView)
+}
+
 final class RectangleView: UIView {
+    weak var delegate: RectangleTapGestureDelegate?
+    
+    init() {
+        super.init(frame: .zero)
+        setupConfiguration()
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func setupConfiguration() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleRectangleTapped))
+        self.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc private func handleRectangleTapped() {
+        print("RectangleView - handleRectangleTapped")
+        delegate?.didTapRectangleGesture(self)
+    }
+    
     func setupFromModel(rectangle: Rectangle) {
         self.translatesAutoresizingMaskIntoConstraints = false
         self.frame.origin = rectangle.origin.toCGPoint

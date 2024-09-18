@@ -50,4 +50,11 @@ final class SideView: UIView {
             alphaSlider.widthAnchor.constraint(equalToConstant: 160),
         ])
     }
+    
+    func resetSideComponenet() {
+        backgroundColorChangeButton.setTitle("None", for: .normal)
+        alphaSlider.isEnabled = false
+    }
 }
+
+// TODO: 버튼 누르면 선택되게, 탭제스쳐를 ShapeView에 넣을지 CanvasView에 넣을지 고민해보기

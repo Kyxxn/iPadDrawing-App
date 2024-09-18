@@ -22,5 +22,6 @@ final class AlphaSlider: UISlider {
         self.translatesAutoresizingMaskIntoConstraints = false
         self.minimumValue = 1.0
         self.maximumValue = 10.0
+        self.isEnabled = false
     }
 }

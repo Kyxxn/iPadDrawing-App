@@ -36,6 +36,8 @@ final class CanvasViewController: UIViewController {
     }
 }
 
+// MARK: - CanvasViewDelegate
+
 extension CanvasViewController: CanvasViewDelegate {
     func didTapShapeButtonInCanvasView(_ canvasView: CanvasView) {
         let rectangle = factory?.makeRectangle()
@@ -44,7 +46,16 @@ extension CanvasViewController: CanvasViewDelegate {
     private func createRectangle(_ rectangle: Rectangle?) {
         guard let rectangle = rectangle else { return }
         let rectangleView = RectangleView()
+        rectangleView.delegate = self
         rectangleView.setupFromModel(rectangle: rectangle)
         canvasView.addRectangle(rectangleView: rectangleView)
+    }
+}
+
+// MARK: - RectangleTapGestureDelegate
+
+extension CanvasViewController: RectangleTapGestureDelegate {
+    func didTapRectangleGesture(_ rectangleView: RectangleView) {
+        print("CanvasViewController - didTapRectangleGesture")
     }
 }
