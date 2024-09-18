@@ -7,10 +7,17 @@
 
 import UIKit
 
+protocol SideViewDelegate: AnyObject {
+    func didTapBackgroundColorChangeButton(_ sideView: SideView)
+    func didChangeAlphaSlider(_ sideView: SideView, changedValue: Float)
+}
+
 final class SideView: UIView {
+    weak var delegate: SideViewDelegate?
+    
     private let backgroundInfoLabel = SideInfoLabel(text: "배경색")
-    private let backgroundColorChangeButton = BackgroundColorChangeButton()
-    private let alphaSlider = AlphaSlider()
+    let backgroundColorChangeButton = BackgroundColorChangeButton()
+    let alphaSlider = AlphaSlider()
     private let verticalStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -24,6 +31,8 @@ final class SideView: UIView {
     init() {
         super.init(frame: .zero)
         setupConfiguration()
+        setupActions()
+        setupLayout()
     }
     
     @available(*, unavailable)
@@ -38,7 +47,21 @@ final class SideView: UIView {
         [backgroundInfoLabel, backgroundColorChangeButton, alphaSlider].forEach {
             verticalStackView.addArrangedSubview($0)
         }
+    }
+    
+    private func setupActions() {
+        self.backgroundColorChangeButton.addAction(UIAction { [weak self] _ in
+            guard let self = self else { return }
+            self.delegate?.didTapBackgroundColorChangeButton(self)
+        }, for: .touchUpInside)
         
+        self.alphaSlider.addAction(UIAction { [weak self] _ in
+            guard let self = self else { return }
+            self.delegate?.didChangeAlphaSlider(self, changedValue: self.alphaSlider.value)
+        }, for: .valueChanged)
+    }
+    
+    private func setupLayout() {
         NSLayoutConstraint.activate([
             verticalStackView.topAnchor.constraint(equalTo: self.topAnchor, constant: 30),
             verticalStackView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),

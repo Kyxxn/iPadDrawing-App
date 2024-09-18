@@ -10,6 +10,8 @@ import UIKit
 protocol CanvasViewDelegate: AnyObject {
     func didTapShapeButtonInCanvasView(_ canvasView: CanvasView)
     func didTapGestureRectangle(_ canvasView: CanvasView, rectangleID: UUID)
+    func didTapBackgroundColorChangeButton(_ canvasView: CanvasView)
+    func didChangeAlphaSlider(_ canvasView: CanvasView, changedValue: Float)
 }
 
 final class CanvasView: UIView {
@@ -26,6 +28,7 @@ final class CanvasView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         rectangleButton.delegate = self
+        sideView.delegate = self
         setupConfiguration()
     }
     
@@ -94,11 +97,22 @@ extension CanvasView: ShapeCreatorButtonDelegate {
 
 extension CanvasView: RectangleTapGestureDelegate {
     func didTapRectangleGesture(_ rectangleView: RectangleView) {
-        print("CanvasView - didTapRectangleGesture")
         delegate?.didTapGestureRectangle(self, rectangleID: rectangleView.rectangleID)
     }
     
     func updateSideView(rectangle: Rectangle) {
         sideView.updateRectangleInfo(rectangle: rectangle)
+    }
+}
+
+// MARK: - SideViewDelegate
+
+extension CanvasView: SideViewDelegate {
+    func didTapBackgroundColorChangeButton(_ sideView: SideView) {
+        delegate?.didTapBackgroundColorChangeButton(self)
+    }
+    
+    func didChangeAlphaSlider(_ sideView: SideView, changedValue: Float) {
+        delegate?.didChangeAlphaSlider(self, changedValue: changedValue)
     }
 }
