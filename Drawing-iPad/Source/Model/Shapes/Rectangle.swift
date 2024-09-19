@@ -9,10 +9,26 @@ import Foundation
 
 final class Rectangle {
     let identifier = UUID()
-    private(set) var origin: Point
-    private(set) var size: Size
-    private(set) var color: Color
-    private(set) var alpha: Alpha
+    private(set) var origin: Point {
+        didSet {
+            postRectangleUpdated()
+        }
+    }
+    private(set) var size: Size {
+        didSet {
+            postRectangleUpdated()
+        }
+    }
+    private(set) var color: Color {
+        didSet {
+            postRectangleUpdated()
+        }
+    }
+    private(set) var alpha: Alpha {
+        didSet {
+            postRectangleUpdated()
+        }
+    }
     
     init(
         origin: Point,
@@ -24,6 +40,11 @@ final class Rectangle {
         self.size = size
         self.color = color
         self.alpha = alpha
+    }
+    
+    private func postRectangleUpdated() {
+        print("postRectangleUpdated")
+        NotificationCenter.default.post(name: .rectangleUpdated, object: nil)
     }
     
     func updateColor(color: Color) {

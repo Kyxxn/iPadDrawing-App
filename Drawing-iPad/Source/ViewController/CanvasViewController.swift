@@ -19,6 +19,7 @@ final class CanvasViewController: UIViewController {
         canvasView.delegate = self
         
         setupConfiguration()
+        setupNotificationAddObserver()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -35,6 +36,19 @@ final class CanvasViewController: UIViewController {
             canvasView.topAnchor.constraint(equalTo: view.topAnchor),
             canvasView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+    }
+    
+    private func setupNotificationAddObserver() {
+        NotificationCenter.default.addObserver(self, selector: #selector(handlePlaneChanged), name: .planeUpdated, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleRectangleChanged), name: .rectangleUpdated, object: nil)
+    }
+    
+    @objc private func handlePlaneChanged() {
+        print("CanvasViewController handlePlaneChanged")
+    }
+    
+    @objc private func handleRectangleChanged() {
+        print("CanvasViewController handleRectangleChanged")
     }
 }
 
