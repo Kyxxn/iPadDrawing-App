@@ -115,8 +115,6 @@ extension CanvasViewController: CanvasViewDelegate {
         
         if let newAlpha = Alpha.from(floatValue: changedValue) {
             rectangle.updateAlpha(alpha: newAlpha)
-        } else {
-            print("변환 실패: \(changedValue)")
         }
     }
 }
