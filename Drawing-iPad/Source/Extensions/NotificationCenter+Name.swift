@@ -8,6 +8,6 @@
 import Foundation
 
 extension Notification.Name {
-    static let shpaeUpdated = Notification.Name("ShapeUpdatedNotification")
+    static let shapeUpdated = Notification.Name("ShapeUpdatedNotification")
     static let planeUpdated = Notification.Name("PlaneUpdatedNotification")
 }
