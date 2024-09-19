@@ -7,7 +7,7 @@
 
 import Foundation
 
-class BaseShape: Shapable, AlphaControllable  {
+class BaseShape: Shapable, AlphaControllable, CustomStringConvertible  {
     let identifier = UUID()
     private(set) var origin: Point {
         didSet {
@@ -24,6 +24,9 @@ class BaseShape: Shapable, AlphaControllable  {
             postShapeUpdated()
         }
     }
+    var description: String {
+        "[\(self.identifier)]\n: \(origin), \(size), \(alpha)\n"
+    }
     
     init(origin: Point, size: Size, alpha: Alpha) {
         self.origin = origin
@@ -33,16 +36,10 @@ class BaseShape: Shapable, AlphaControllable  {
     
     func postShapeUpdated() {
         print("postShapeUpdated")
-        NotificationCenter.default.post(name: .rectangleUpdated, object: self)
+        NotificationCenter.default.post(name: .shapeUpdated, object: self)
     }
     
     func updateAlpha(alpha: Alpha) {
         self.alpha = alpha
-    }
-}
-
-extension BaseShape: CustomStringConvertible {
-    var description: String {
-        "[\(self.identifier)]\n: \(origin), \(size), \(alpha)\n"
     }
 }

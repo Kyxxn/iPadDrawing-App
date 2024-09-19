@@ -14,6 +14,10 @@ final class Rectangle: BaseShape, Colorable {
         }
     }
     
+    override var description: String {
+        return super.description + "Color: \(color)\n"
+    }
+    
     init(
         origin: Point,
         size: Size,
