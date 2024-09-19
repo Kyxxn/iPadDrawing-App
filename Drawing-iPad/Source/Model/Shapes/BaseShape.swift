@@ -8,6 +8,8 @@
 import Foundation
 
 class BaseShape: Shapable, AlphaControllable, CustomStringConvertible  {
+    // MARK: - Properties
+    
     let identifier = UUID()
     private(set) var origin: Point {
         didSet {
@@ -28,11 +30,15 @@ class BaseShape: Shapable, AlphaControllable, CustomStringConvertible  {
         "[\(self.identifier)]\n: \(origin), \(size), \(alpha)\n"
     }
     
+    // MARK: - Initializer
+    
     init(origin: Point, size: Size, alpha: Alpha) {
         self.origin = origin
         self.size = size
         self.alpha = alpha
     }
+    
+    // MARK: - Method
     
     func postShapeUpdated() {
         print("postShapeUpdated")

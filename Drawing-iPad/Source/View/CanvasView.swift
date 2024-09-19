@@ -15,7 +15,11 @@ protocol CanvasViewDelegate: AnyObject {
 }
 
 final class CanvasView: UIView {
+    // MARK: - Properties
+    
     weak var delegate: CanvasViewDelegate?
+    
+    // MARK: - UI Components
     
     private let rectangleButton = ShapeCreatorButton(name: "사각형")
     private let sideView = SideView()
@@ -38,6 +42,8 @@ final class CanvasView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    // MARK: - Method
     
     private func setupConfiguration() {
         self.addSubview(rectangleButton)
