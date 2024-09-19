@@ -44,7 +44,7 @@ final class Rectangle {
     
     private func postRectangleUpdated() {
         print("postRectangleUpdated")
-        NotificationCenter.default.post(name: .rectangleUpdated, object: nil)
+        NotificationCenter.default.post(name: .rectangleUpdated, object: self)
     }
     
     func updateColor(color: Color) {
