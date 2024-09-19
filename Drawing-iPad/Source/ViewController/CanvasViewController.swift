@@ -19,6 +19,7 @@ final class CanvasViewController: UIViewController {
         canvasView.delegate = self
         
         setupConfiguration()
+        setupNotificationAddObserver()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -35,6 +36,31 @@ final class CanvasViewController: UIViewController {
             canvasView.topAnchor.constraint(equalTo: view.topAnchor),
             canvasView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+    }
+    
+    private func setupNotificationAddObserver() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handlePlaneChanged),
+            name: .planeUpdated,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleRectangleChanged),
+            name: .rectangleUpdated,
+            object: nil
+        )
+    }
+    
+    @objc private func handlePlaneChanged() {
+        print("CanvasViewController handlePlaneChanged")
+    }
+    
+    @objc private func handleRectangleChanged(_ notification: Notification) {
+        if let updatedRectangle = notification.object as? Rectangle {
+            canvasView.updateSideView(rectangle: updatedRectangle)
+        }
     }
 }
 
@@ -80,7 +106,6 @@ extension CanvasViewController: CanvasViewDelegate {
             alpha: selectedRectangleView?.alpha ?? .zero
         )
         rectangle.updateColor(color: newColor)
-        canvasView.updateSideView(rectangle: rectangle)
     }
     
     func didChangeAlphaSlider(_ canvasView: CanvasView, changedValue: Float) {
@@ -90,8 +115,6 @@ extension CanvasViewController: CanvasViewDelegate {
         
         if let newAlpha = Alpha.from(floatValue: changedValue) {
             rectangle.updateAlpha(alpha: newAlpha)
-        } else {
-            print("변환 실패: \(changedValue)")
         }
     }
 }

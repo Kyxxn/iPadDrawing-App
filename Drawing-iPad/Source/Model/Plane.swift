@@ -9,7 +9,11 @@ import Foundation
 
 // TODO: struct로 만들 경우 mutating을 붙여야 함, struct 안에 class가 있는 구조의 문제는 없나 ?
 final class Plane {
-    private var rectangles: [Rectangle]
+    private var rectangles: [Rectangle] {
+        didSet {
+            postPlaneChangedNotification()
+        }
+    }
     var count: Int { self.rectangles.count }
     
     init(rectangles: [Rectangle]) {
@@ -18,6 +22,11 @@ final class Plane {
     
     convenience init() {
         self.init(rectangles: [])
+    }
+    
+    private func postPlaneChangedNotification() {
+        print("postPlaneChangedNotification")
+        NotificationCenter.default.post(name: .planeUpdated, object: nil)
     }
     
     func appendRectangle(rectangle: Rectangle) {
