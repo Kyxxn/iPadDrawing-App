@@ -48,7 +48,7 @@ final class CanvasViewController: UIViewController {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(handleRectangleChanged),
-            name: .rectangleUpdated,
+            name: .shapeUpdated,
             object: nil
         )
     }

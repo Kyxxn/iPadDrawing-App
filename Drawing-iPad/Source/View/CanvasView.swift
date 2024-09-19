@@ -25,8 +25,10 @@ final class CanvasView: UIView {
         return view
     }()
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    // MARK: - Initializer
+    
+    init() {
+        super.init(frame: .zero)
         rectangleButton.delegate = self
         sideView.delegate = self
         setupConfiguration()
