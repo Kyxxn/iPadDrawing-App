@@ -8,7 +8,7 @@
 import UIKit
 
 protocol ShapeCreatorButtonDelegate: AnyObject {
-    func didTapShapeButton(_ button: ShapeCreatorButton)
+    func didTapShapeCreatorButton(_ button: ShapeCreatorButton)
 }
 
 final class ShapeCreatorButton: UIButton {
@@ -36,11 +36,11 @@ final class ShapeCreatorButton: UIButton {
         self.setTitleColor(UIColor.black, for: .normal)
         self.addAction(UIAction { [weak self] _ in
             print("버튼눌림")
-            self?.handleButtonTap()
+            self?.handleButtonTapped()
         }, for: .touchUpInside)
     }
     
-    private func handleButtonTap() {
-        delegate?.didTapShapeButton(self)
+    private func handleButtonTapped() {
+        delegate?.didTapShapeCreatorButton(self)
     }
 }

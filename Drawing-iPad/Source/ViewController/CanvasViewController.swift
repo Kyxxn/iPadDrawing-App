@@ -73,7 +73,7 @@ final class CanvasViewController: UIViewController {
 // MARK: - CanvasViewDelegate
 
 extension CanvasViewController: CanvasViewDelegate {
-    func didTapShapeButtonInCanvasView(_ canvasView: CanvasView) {
+    func didTapShapeCreatorButtonInCanvasView(_ canvasView: CanvasView) {
         guard let rectangle = factory?.makeRectangle() else { return }
         plane.appendRectangle(rectangle: rectangle)
         createRectangle(rectangle)
