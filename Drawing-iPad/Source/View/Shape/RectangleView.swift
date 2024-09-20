@@ -51,15 +51,17 @@ final class RectangleView: UIView {
         delegate?.didTapRectangleGesture(self)
     }
     
-    func setupFromModel(rectangle: Rectangle) {
+    func setupFromModel(shape: BaseShape) {
         self.translatesAutoresizingMaskIntoConstraints = false
-        self.frame.origin = rectangle.origin.toCGPoint
-        self.frame.size = rectangle.size.toCGSize
-        self.backgroundColor = UIColor(
-            red: CGFloat(rectangle.color.red) / 255.0,
-            green: CGFloat(rectangle.color.green) / 255.0,
-            blue: CGFloat(rectangle.color.blue) / 255.0,
-            alpha: rectangle.alpha.toCGFloat
-        )
+        self.frame.origin = shape.origin.toCGPoint
+        self.frame.size = shape.size.toCGSize
+        if let shape = shape as? Rectangle {
+            self.backgroundColor = UIColor(
+                red: CGFloat(shape.color.red) / 255.0,
+                green: CGFloat(shape.color.green) / 255.0,
+                blue: CGFloat(shape.color.blue) / 255.0,
+                alpha: shape.alpha.toCGFloat
+            )
+        }
     }
 }

@@ -9,19 +9,19 @@ import Foundation
 
 // TODO: struct로 만들 경우 mutating을 붙여야 함, struct 안에 class가 있는 구조의 문제는 없나 ?
 final class Plane {
-    private var rectangles: [Rectangle] {
+    private var shapes: [BaseShape] {
         didSet {
             postPlaneChangedNotification()
         }
     }
-    var count: Int { self.rectangles.count }
+    var count: Int { self.shapes.count }
     
-    init(rectangles: [Rectangle]) {
-        self.rectangles = rectangles
+    init(shapes: [BaseShape]) {
+        self.shapes = shapes
     }
     
     convenience init() {
-        self.init(rectangles: [])
+        self.init(shapes: [])
     }
     
     private func postPlaneChangedNotification() {
@@ -29,26 +29,26 @@ final class Plane {
         NotificationCenter.default.post(name: .planeUpdated, object: nil)
     }
     
-    func appendRectangle(rectangle: Rectangle) {
-        self.rectangles.append(rectangle)
+    func appendShape(shape: BaseShape) {
+        self.shapes.append(shape)
     }
     
     func containsRectangle(at origin: Point) -> Bool {
-        self.rectangles.contains {
+        self.shapes.contains {
             $0.origin == origin
         }
     }
     
-    func rectangle(withID identifier: UUID) -> Rectangle? {
-        return rectangles.first { $0.identifier == identifier }
+    func findShape(withID identifier: UUID) -> BaseShape? {
+        return shapes.first { $0.identifier == identifier }
     }
 }
 
 // MARK: - Subscript 구현
 
 extension Plane {
-    subscript(index: Int) -> Rectangle? {
-        guard index >= 0 && index < rectangles.count else { return nil }
-        return rectangles[index]
+    subscript(index: Int) -> BaseShape? {
+        guard index >= 0 && index < shapes.count else { return nil }
+        return shapes[index]
     }
 }
