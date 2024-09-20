@@ -11,7 +11,7 @@ final class CanvasViewController: UIViewController {
     // MARK: - Properties
     
     private let canvasView = CanvasView()
-    private var factory: RectangleFactory?
+    private var factory: (any ShapeCreatable)?
     private let plane = Plane()
     private var selectedRectangleView: RectangleView?
     
@@ -24,12 +24,6 @@ final class CanvasViewController: UIViewController {
         
         setupConfiguration()
         setupNotificationAddObserver()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        factory = RectangleFactory(viewBoundsSize: canvasView.planeViewBoundsSize())
     }
     
     // MARK: - Method
@@ -53,7 +47,7 @@ final class CanvasViewController: UIViewController {
         )
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(handleRectangleChanged),
+            selector: #selector(handleShapeChanged),
             name: .shapeUpdated,
             object: nil
         )
@@ -63,9 +57,9 @@ final class CanvasViewController: UIViewController {
         print("CanvasViewController handlePlaneChanged")
     }
     
-    @objc private func handleRectangleChanged(_ notification: Notification) {
-        if let updatedRectangle = notification.object as? Rectangle {
-            canvasView.updateSideView(rectangle: updatedRectangle)
+    @objc private func handleShapeChanged(_ notification: Notification) {
+        if let updatedShape = notification.object as? BaseShape {
+            canvasView.updateSideView(shape: updatedShape)
         }
     }
 }
@@ -73,15 +67,28 @@ final class CanvasViewController: UIViewController {
 // MARK: - CanvasViewDelegate
 
 extension CanvasViewController: CanvasViewDelegate {
-    func didTapShapeCreatorButtonInCanvasView(_ canvasView: CanvasView) {
-        guard let rectangle = factory?.makeRectangle() else { return }
-        plane.appendRectangle(rectangle: rectangle)
-        createRectangle(rectangle)
+    func didTapShapeCreatorButtonInCanvasView(_ canvasView: CanvasView, shapeCategory: ShapeCategory) {
+        switch shapeCategory {
+        case .rectangle:
+            factory = RectangleFactory(viewBoundsSize: canvasView.planeViewBoundsSize())
+        case .photo:
+            factory = PhotoFactory(viewBoundsSize: canvasView.planeViewBoundsSize())
+        }
+        
+        if let photoFactory = factory as? PhotoFactory {
+            let imageURL = URL(string: "temp")!
+            let photo = photoFactory.makeShape(imageURL: imageURL)
+            plane.appendShape(shape: photo)
+            createShape(photo)
+        } else if let shape = factory?.makeShape() as? Rectangle {
+            plane.appendShape(shape: shape)
+            createShape(shape)
+        }
     }
     
-    private func createRectangle(_ rectangle: Rectangle) {
-        let rectangleView = RectangleView(rectangleID: rectangle.identifier)
-        rectangleView.setupFromModel(rectangle: rectangle)
+    private func createShape(_ shape: BaseShape) {
+        let rectangleView = RectangleView(rectangleID: shape.identifier)
+        rectangleView.setupFromModel(shape: shape)
         canvasView.addRectangle(rectangleView: rectangleView)
     }
     
@@ -92,17 +99,17 @@ extension CanvasViewController: CanvasViewDelegate {
         }
         
         guard let rectangleView = canvasView.rectangleView(withID: rectangleID),
-              let rectangle = plane.rectangle(withID: rectangleID) else { return }
+              let shape = plane.findShape(withID: rectangleID) else { return }
         
         rectangleView.isSelected = true
         selectedRectangleView = rectangleView
         
-        canvasView.updateSideView(rectangle: rectangle)
+        canvasView.updateSideView(shape: shape)
     }
     
     func didTapBackgroundColorChangeButton(_ canvasView: CanvasView) {
         guard let rectangleView = selectedRectangleView,
-              let rectangle = plane.rectangle(withID: rectangleView.rectangleID) else { return }
+              let shape = plane.findShape(withID: rectangleView.rectangleID) as? Rectangle else { return }
         let newColor = RandomFactory.makeRandomColor()
         
         rectangleView.backgroundColor = UIColor(
@@ -111,16 +118,16 @@ extension CanvasViewController: CanvasViewDelegate {
             blue: CGFloat(newColor.blue) / 255.0,
             alpha: selectedRectangleView?.alpha ?? .zero
         )
-        rectangle.updateColor(color: newColor)
+        shape.updateColor(color: newColor)
     }
     
     func didChangeAlphaSlider(_ canvasView: CanvasView, changedValue: Float) {
         guard let rectangleView = selectedRectangleView,
-              let rectangle = plane.rectangle(withID: rectangleView.rectangleID) else { return }
+              let shape = plane.findShape(withID: rectangleView.rectangleID) else { return }
         rectangleView.alpha = CGFloat(changedValue) / 10.0
         
         if let newAlpha = Alpha.from(floatValue: changedValue) {
-            rectangle.updateAlpha(alpha: newAlpha)
+            shape.updateAlpha(alpha: newAlpha)
         }
     }
 }
