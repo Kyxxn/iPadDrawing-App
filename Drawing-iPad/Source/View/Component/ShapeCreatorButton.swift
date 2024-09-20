@@ -38,7 +38,6 @@ final class ShapeCreatorButton: UIButton {
         self.setTitle(self.name, for: .normal)
         self.setTitleColor(UIColor.black, for: .normal)
         self.addAction(UIAction { [weak self] _ in
-            print("버튼눌림")
             self?.handleButtonTapped()
         }, for: .touchUpInside)
     }

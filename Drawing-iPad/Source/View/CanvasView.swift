@@ -43,6 +43,7 @@ final class CanvasView: UIView {
     init() {
         super.init(frame: .zero)
         rectangleCreatorButton.delegate = self
+        photoCreatorButton.delegate = self
         sideView.delegate = self
         setupConfiguration()
     }
