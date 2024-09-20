@@ -48,4 +48,24 @@
   
   > 그렇다면 처음 '사각형'을 만들 때부터 추상화를 하는 게 맞을까 ?
 
+
+  ### 추상화는 어디까지 해야 할까 ?
+  > 본 프로젝트에서는 '사각형', '사진', '텍스트', '원'과 같이 Shape들이 등장한다.
+
+  > 그리고 각각의 Shape에 대한 팩토리를 만들어서 OCP 원칙을 따르게 할 것이다. 이를 구현하기 위해 ShapeCretable 프로토콜로 추상화를 해주었다. 아래는 코드이다.
+
+  ``` swift
+  protocol ShapeCreatable {
+      associatedtype ShapeType: (Shapable & AlphaControllable)
+      
+      func makeShape() -> ShapeType
+  }
+  ```
+  
+  위와 같이 `ShapeCretable`을 만들게 되면 `Rectangle`은 문제가 없으나, `Photo`의 경우 imageURL을 받아야 하므로 문제가 생기게 된다.
+
+  PhotoFactory에만 `func makeShape(imageURL: URL) -> Photo {}`을 만들고 컨트롤러에서 타입캐스팅을 해서 처리하는게 좋을까,
+  
+  아니면 불필요한 메소드라도 `ShapeCreatable`에 넣어두는게 편할까?
+
 </details>

@@ -8,10 +8,14 @@
 import UIKit
 
 final class CanvasViewController: UIViewController {
+    // MARK: - Properties
+    
     private let canvasView = CanvasView()
     private var factory: RectangleFactory?
     private let plane = Plane()
     private var selectedRectangleView: RectangleView?
+    
+    // MARK: - View LifeCycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,6 +31,8 @@ final class CanvasViewController: UIViewController {
         
         factory = RectangleFactory(viewBoundsSize: canvasView.planeViewBoundsSize())
     }
+    
+    // MARK: - Method
     
     private func setupConfiguration() {
         view.addSubview(canvasView)
@@ -48,7 +54,7 @@ final class CanvasViewController: UIViewController {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(handleRectangleChanged),
-            name: .rectangleUpdated,
+            name: .shapeUpdated,
             object: nil
         )
     }

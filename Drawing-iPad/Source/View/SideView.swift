@@ -13,7 +13,11 @@ protocol SideViewDelegate: AnyObject {
 }
 
 final class SideView: UIView {
+    // MARK: - Properties
+    
     weak var delegate: SideViewDelegate?
+    
+    // MARK: - UI Components
     
     private let backgroundInfoLabel = SideInfoLabel(text: "배경색")
     let backgroundColorChangeButton = BackgroundColorChangeButton()
@@ -28,6 +32,8 @@ final class SideView: UIView {
         return stackView
     }()
     
+    // MARK: - Initializer
+    
     init() {
         super.init(frame: .zero)
         setupConfiguration()
@@ -39,6 +45,8 @@ final class SideView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    // MARK: - Method
     
     private func setupConfiguration() {
         self.translatesAutoresizingMaskIntoConstraints = false

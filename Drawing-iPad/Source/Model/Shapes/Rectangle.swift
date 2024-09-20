@@ -7,27 +7,15 @@
 
 import Foundation
 
-final class Rectangle {
-    let identifier = UUID()
-    private(set) var origin: Point {
-        didSet {
-            postRectangleUpdated()
-        }
-    }
-    private(set) var size: Size {
-        didSet {
-            postRectangleUpdated()
-        }
-    }
+final class Rectangle: BaseShape, Colorable {
     private(set) var color: Color {
         didSet {
-            postRectangleUpdated()
+            postShapeUpdated()
         }
     }
-    private(set) var alpha: Alpha {
-        didSet {
-            postRectangleUpdated()
-        }
+    
+    override var description: String {
+        return super.description + "Color: \(color)\n"
     }
     
     init(
@@ -36,28 +24,16 @@ final class Rectangle {
         color: Color,
         alpha: Alpha
     ) {
-        self.origin = origin
-        self.size = size
         self.color = color
-        self.alpha = alpha
-    }
-    
-    private func postRectangleUpdated() {
-        print("postRectangleUpdated")
-        NotificationCenter.default.post(name: .rectangleUpdated, object: self)
+        super.init(
+            origin: origin,
+            size: size,
+            alpha: alpha
+        )
     }
     
     func updateColor(color: Color) {
         self.color = color
     }
-    
-    func updateAlpha(alpha: Alpha) {
-        self.alpha = alpha
-    }
 }
 
-extension Rectangle: CustomStringConvertible {
-    var description: String {
-        "[\(self.identifier)]\n: \(origin), \(size), \(color), \(alpha)\n"
-    }
-}
