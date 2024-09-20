@@ -7,14 +7,14 @@
 
 import Foundation
 
-struct RectangleFactory {
+struct RectangleFactory: ShapeCreatable {
     let planeSize: CGSize
     
     init(viewBoundsSize: CGSize) {
         self.planeSize = viewBoundsSize
     }
     
-    func makeRectangle() -> Rectangle {
+    func makeShape() -> Rectangle {
         return Rectangle(
             origin: RandomFactory.makeRandomOrigin(size: planeSize),
             size: RandomFactory.makeRandomSize(),
