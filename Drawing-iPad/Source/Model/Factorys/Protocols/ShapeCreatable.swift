@@ -6,7 +6,7 @@
 //
 
 protocol ShapeCreatable {
-    associatedtype ShapeType: (Shapable & AlphaControllable)
+    associatedtype ShapeType: BaseShape
     
     func makeShape() -> ShapeType
 }

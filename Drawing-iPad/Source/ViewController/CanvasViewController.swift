@@ -68,22 +68,20 @@ final class CanvasViewController: UIViewController {
 
 extension CanvasViewController: CanvasViewDelegate {
     func didTapShapeCreatorButtonInCanvasView(_ canvasView: CanvasView, shapeCategory: ShapeCategory) {
+        let shape: BaseShape
+        
         switch shapeCategory {
         case .rectangle:
-            factory = RectangleFactory(viewBoundsSize: canvasView.planeViewBoundsSize())
+            let factory = RectangleFactory(viewBoundsSize: canvasView.planeViewBoundsSize())
+            shape = factory.makeShape()
         case .photo:
-            factory = PhotoFactory(viewBoundsSize: canvasView.planeViewBoundsSize())
+            let factory = PhotoFactory(viewBoundsSize: canvasView.planeViewBoundsSize())
+            let imageURL = URL(string: "temp")!
+            shape = factory.makeShape(imageURL: imageURL)
         }
         
-        if let photoFactory = factory as? PhotoFactory {
-            let imageURL = URL(string: "temp")!
-            let photo = photoFactory.makeShape(imageURL: imageURL)
-            plane.appendShape(shape: photo)
-            createShape(photo)
-        } else if let shape = factory?.makeShape() as? Rectangle {
-            plane.appendShape(shape: shape)
-            createShape(shape)
-        }
+        plane.appendShape(shape: shape)
+        createShape(shape)
     }
     
     private func createShape(_ shape: BaseShape) {
