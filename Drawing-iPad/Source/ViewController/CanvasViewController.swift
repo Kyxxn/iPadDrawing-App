@@ -152,28 +152,28 @@ extension CanvasViewController: PHPickerViewControllerDelegate {
         guard let provider = results.first?.itemProvider else { return }
         provider.loadObject(ofClass: UIImage.self) { [weak self] image, error in
             guard let self = self,
-                  let selectedimage = image as? UIImage,
-                  let data = selectedimage.pngData() else { return }
+                  let selectedimage = image as? UIImage else { return }
             
             DispatchQueue.main.async {
-                guard let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
+                guard let documents = FileManager.default.urls(for: .documentDirectory,
+                                                               in: .userDomainMask).first
+                else { return }
                 let fileName = UUID().uuidString + ".png"
                 let imageURL = documents.appending(path: fileName, directoryHint: .notDirectory)
-                self.createPhoto(imageURL: imageURL)
+                self.createPhoto(image: selectedimage, imageURL: imageURL)
             }
         }
     }
     
-    private func createPhoto(imageURL: URL) {
+    private func createPhoto(image: UIImage, imageURL: URL) {
         let factory = PhotoFactory(viewBoundsSize: canvasView.planeViewBoundsSize())
         let photo = factory.makeShape(imageURL: imageURL)
         
-        let image = UIImage(contentsOfFile: imageURL.path)
         let photoImageView = UIImageView(image: image)
         let photoView = PhotoView(imageView: photoImageView, shapeID: photo.identifier)
         photoView.setupFromModel(shape: photo)
-        canvasView.addShape(shapeView: photoView)
         
         plane.appendShape(shape: photo)
+        canvasView.addShape(shapeView: photoView)
     }
 }
