@@ -127,13 +127,13 @@ extension CanvasViewController: CanvasViewDelegate {
         case .began:
             createTemporaryView(shapeView: shapeView)
         case .changed:
-            temporaryView?.center = CGPoint(
-                x: shapeView.center.x + translation.x,
-                y: shapeView.center.y + translation.y
-            )
-            sender.setTranslation(.zero, in: canvasView)
-            
             if let tempView = temporaryView {
+                tempView.center = CGPoint(
+                    x: tempView.center.x + translation.x,
+                    y: tempView.center.y + translation.y
+                )
+                sender.setTranslation(.zero, in: canvasView)
+                print("changed: \(tempView.frame.origin)")
                 updateShapeModelPosition(origin: tempView.frame.origin)
             }
         case .ended, .cancelled:
