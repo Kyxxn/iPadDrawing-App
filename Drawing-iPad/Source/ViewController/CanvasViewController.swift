@@ -6,16 +6,17 @@
 //
 
 import UIKit
+import PhotosUI
 
 final class CanvasViewController: UIViewController {
-    // MARK: - Properties
+    // MARK: Properties
     
     private let canvasView = CanvasView()
     private var factory: (any ShapeCreatable)?
     private let plane = Plane()
     private var selectedShapeView: BaseShapeView?
     
-    // MARK: - View LifeCycle
+    // MARK: View LifeCycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,7 +27,7 @@ final class CanvasViewController: UIViewController {
         setupNotificationAddObserver()
     }
     
-    // MARK: - Method
+    // MARK: Method
     
     private func setupConfiguration() {
         view.addSubview(canvasView)
@@ -67,28 +68,38 @@ final class CanvasViewController: UIViewController {
 // MARK: - CanvasViewDelegate
 
 extension CanvasViewController: CanvasViewDelegate {
+    // MARK: ShapeModel & ShapeView Creator
+    
     func didTapShapeCreatorButtonInCanvasView(_ canvasView: CanvasView, shapeCategory: ShapeCategory) {
-        let shape: BaseShape
-        
         switch shapeCategory {
         case .rectangle:
-            let factory = RectangleFactory(viewBoundsSize: canvasView.planeViewBoundsSize())
-            shape = factory.makeShape()
+            let shape = createRectangle()
+            plane.appendShape(shape: shape)
         case .photo:
-            let factory = PhotoFactory(viewBoundsSize: canvasView.planeViewBoundsSize())
-            let imageURL = URL(string: "temp")!
-            shape = factory.makeShape(imageURL: imageURL)
+            presentPhotoPicker()
         }
-        
-        plane.appendShape(shape: shape)
-        createShape(shape)
     }
     
-    private func createShape(_ shape: BaseShape) {
-        let shapeView = BaseShapeView(shapeID: shape.identifier)
-        shapeView.setupFromModel(shape: shape)
-        canvasView.addShape(shapeView: shapeView)
+    private func createRectangle() -> BaseShape {
+        let factory = RectangleFactory(viewBoundsSize: canvasView.planeViewBoundsSize())
+        let rectangle = factory.makeShape()
+        let rectangleView = RectangleView(shapeID: rectangle.identifier)
+        rectangleView.setupFromModel(shape: rectangle)
+        canvasView.addShape(shapeView: rectangleView)
+        
+        return rectangle
     }
+    
+    private func presentPhotoPicker() {
+        var configuration = PHPickerConfiguration()
+        configuration.selectionLimit = 1
+        configuration.filter = .images
+        let phPickerViewController = PHPickerViewController(configuration: configuration)
+        phPickerViewController.delegate = self
+        present(phPickerViewController, animated: true)
+    }
+    
+    // MARK: Tap Gesture
     
     func didTapGestureShapeView(_ canvasView: CanvasView,
                                 shapeID: UUID) {
@@ -104,6 +115,8 @@ extension CanvasViewController: CanvasViewDelegate {
         
         canvasView.updateSideView(shape: shape)
     }
+    
+    // MARK: SideView
     
     func didTapBackgroundColorChangeButton(_ canvasView: CanvasView) {
         guard let shapeView = selectedShapeView,
@@ -127,5 +140,40 @@ extension CanvasViewController: CanvasViewDelegate {
         if let newAlpha = Alpha.from(floatValue: changedValue) {
             shape.updateAlpha(alpha: newAlpha)
         }
+    }
+}
+
+// MARK: - PHPickerViewControllerDelegate
+
+extension CanvasViewController: PHPickerViewControllerDelegate {
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        picker.dismiss(animated: true)
+        
+        guard let provider = results.first?.itemProvider else { return }
+        provider.loadObject(ofClass: UIImage.self) { [weak self] image, error in
+            guard let self = self,
+                  let selectedimage = image as? UIImage,
+                  let data = selectedimage.pngData() else { return }
+            
+            DispatchQueue.main.async {
+                guard let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
+                let fileName = UUID().uuidString + ".png"
+                let imageURL = documents.appending(path: fileName, directoryHint: .notDirectory)
+                self.createPhoto(imageURL: imageURL)
+            }
+        }
+    }
+    
+    private func createPhoto(imageURL: URL) {
+        let factory = PhotoFactory(viewBoundsSize: canvasView.planeViewBoundsSize())
+        let photo = factory.makeShape(imageURL: imageURL)
+        
+        let image = UIImage(contentsOfFile: imageURL.path)
+        let photoImageView = UIImageView(image: image)
+        let photoView = PhotoView(imageView: photoImageView, shapeID: photo.identifier)
+        photoView.setupFromModel(shape: photo)
+        canvasView.addShape(shapeView: photoView)
+        
+        plane.appendShape(shape: photo)
     }
 }
