@@ -9,7 +9,7 @@ import UIKit
 
 protocol CanvasViewDelegate: AnyObject {
     func didTapShapeCreatorButtonInCanvasView(_ canvasView: CanvasView, shapeCategory: ShapeCategory)
-    func didTapGestureRectangle(_ canvasView: CanvasView, rectangleID: UUID)
+    func didTapGestureShapeView(_ canvasView: CanvasView, shapeID: UUID)
     func didTapBackgroundColorChangeButton(_ canvasView: CanvasView)
     func didChangeAlphaSlider(_ canvasView: CanvasView, changedValue: Float)
 }
@@ -86,15 +86,15 @@ final class CanvasView: UIView {
         ])
     }
     
-    func addRectangle(rectangleView: BaseShapeView) {
-        rectangleView.delegate = self
-        planeView.addSubview(rectangleView)
+    func addShape(shapeView: BaseShapeView) {
+        shapeView.delegate = self
+        planeView.addSubview(shapeView)
         
         NSLayoutConstraint.activate([
-            rectangleView.leadingAnchor.constraint(equalTo: planeView.leadingAnchor, constant: rectangleView.frame.origin.x),
-            rectangleView.topAnchor.constraint(equalTo: planeView.topAnchor, constant: rectangleView.frame.origin.y),
-            rectangleView.widthAnchor.constraint(equalToConstant: rectangleView.frame.width),
-            rectangleView.heightAnchor.constraint(equalToConstant: rectangleView.frame.height)
+            shapeView.leadingAnchor.constraint(equalTo: planeView.leadingAnchor, constant: shapeView.frame.origin.x),
+            shapeView.topAnchor.constraint(equalTo: planeView.topAnchor, constant: shapeView.frame.origin.y),
+            shapeView.widthAnchor.constraint(equalToConstant: shapeView.frame.width),
+            shapeView.heightAnchor.constraint(equalToConstant: shapeView.frame.height)
         ])
     }
     
@@ -102,10 +102,10 @@ final class CanvasView: UIView {
         return planeView.bounds.size
     }
     
-    func rectangleView(withID id: UUID) -> BaseShapeView? {
+    func shapeView(withID id: UUID) -> BaseShapeView? {
         return planeView.subviews
             .compactMap { $0 as? BaseShapeView }
-            .first { $0.rectangleID == id }
+            .first { $0.shapeID == id }
     }
 }
 
@@ -120,8 +120,8 @@ extension CanvasView: ShapeCreatorButtonDelegate {
 // MARK: - RectangleTapGestureDelegate
 
 extension CanvasView: ShapeViewDelegate {
-    func didTapRectangleGesture(_ rectangleView: BaseShapeView) {
-        delegate?.didTapGestureRectangle(self, rectangleID: rectangleView.rectangleID)
+    func didTapShapeView(_ shapeView: BaseShapeView) {
+        delegate?.didTapGestureShapeView(self, shapeID: shapeView.shapeID)
     }
     
     func updateSideView(shape: BaseShape) {

@@ -87,20 +87,20 @@ extension CanvasViewController: CanvasViewDelegate {
     private func createShape(_ shape: BaseShape) {
         let shapeView = BaseShapeView(shapeID: shape.identifier)
         shapeView.setupFromModel(shape: shape)
-        canvasView.addRectangle(rectangleView: shapeView)
+        canvasView.addShape(shapeView: shapeView)
     }
     
-    func didTapGestureRectangle(_ canvasView: CanvasView,
-                                rectangleID: UUID) {
+    func didTapGestureShapeView(_ canvasView: CanvasView,
+                                shapeID: UUID) {
         if let previousSelectedView = selectedShapeView {
             previousSelectedView.isSelected = false
         }
         
-        guard let rectangleView = canvasView.rectangleView(withID: rectangleID),
-              let shape = plane.findShape(withID: rectangleID) else { return }
+        guard let shapeView = canvasView.shapeView(withID: shapeID),
+              let shape = plane.findShape(withID: shapeID) else { return }
         
-        rectangleView.isSelected = true
-        selectedShapeView = rectangleView
+        shapeView.isSelected = true
+        selectedShapeView = shapeView
         
         canvasView.updateSideView(shape: shape)
     }

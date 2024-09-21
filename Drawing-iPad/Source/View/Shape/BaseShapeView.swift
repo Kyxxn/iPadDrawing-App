@@ -8,7 +8,7 @@
 import UIKit
 
 protocol ShapeViewDelegate: AnyObject {
-    func didTapRectangleGesture(_ shapeView: BaseShapeView)
+    func didTapShapeView(_ shapeView: BaseShapeView)
 }
 
 class BaseShapeView: UIView {
@@ -48,7 +48,7 @@ class BaseShapeView: UIView {
     
     @objc private func handleShapeTapped() {
         print("BaseShapeView - handleShapeTapped")
-        delegate?.didTapRectangleGesture(self)
+        delegate?.didTapShapeView(self)
     }
     
     func setupFromModel(shape: BaseShape) {
