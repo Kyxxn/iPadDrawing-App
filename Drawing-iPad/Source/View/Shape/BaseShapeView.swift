@@ -47,6 +47,8 @@ class BaseShapeView: UIView {
         self.addGestureRecognizer(tapGesture)
         
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handleShapePan))
+        panGesture.minimumNumberOfTouches = 1
+        panGesture.maximumNumberOfTouches = 1
         self.addGestureRecognizer(panGesture)
     }
     

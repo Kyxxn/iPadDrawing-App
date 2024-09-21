@@ -99,6 +99,10 @@ final class CanvasView: UIView {
         ])
     }
     
+    func addShape(tempView: UIView) {
+        planeView.addSubview(tempView)
+    }
+    
     func planeViewBoundsSize() -> CGSize {
         return planeView.bounds.size
     }
