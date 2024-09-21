@@ -13,7 +13,7 @@ final class CanvasViewController: UIViewController {
     private let canvasView = CanvasView()
     private var factory: (any ShapeCreatable)?
     private let plane = Plane()
-    private var selectedRectangleView: RectangleView?
+    private var selectedShapeView: BaseShapeView?
     
     // MARK: - View LifeCycle
     
@@ -85,14 +85,14 @@ extension CanvasViewController: CanvasViewDelegate {
     }
     
     private func createShape(_ shape: BaseShape) {
-        let rectangleView = RectangleView(rectangleID: shape.identifier)
-        rectangleView.setupFromModel(shape: shape)
-        canvasView.addRectangle(rectangleView: rectangleView)
+        let shapeView = BaseShapeView(shapeID: shape.identifier)
+        shapeView.setupFromModel(shape: shape)
+        canvasView.addRectangle(rectangleView: shapeView)
     }
     
     func didTapGestureRectangle(_ canvasView: CanvasView,
                                 rectangleID: UUID) {
-        if let previousSelectedView = selectedRectangleView {
+        if let previousSelectedView = selectedShapeView {
             previousSelectedView.isSelected = false
         }
         
@@ -100,29 +100,29 @@ extension CanvasViewController: CanvasViewDelegate {
               let shape = plane.findShape(withID: rectangleID) else { return }
         
         rectangleView.isSelected = true
-        selectedRectangleView = rectangleView
+        selectedShapeView = rectangleView
         
         canvasView.updateSideView(shape: shape)
     }
     
     func didTapBackgroundColorChangeButton(_ canvasView: CanvasView) {
-        guard let rectangleView = selectedRectangleView,
-              let shape = plane.findShape(withID: rectangleView.rectangleID) as? Rectangle else { return }
+        guard let shapeView = selectedShapeView,
+              let shape = plane.findShape(withID: shapeView.shapeID) as? Rectangle else { return }
         let newColor = RandomFactory.makeRandomColor()
         
-        rectangleView.backgroundColor = UIColor(
+        shapeView.backgroundColor = UIColor(
             red: CGFloat(newColor.red) / 255.0,
             green: CGFloat(newColor.green) / 255.0,
             blue: CGFloat(newColor.blue) / 255.0,
-            alpha: selectedRectangleView?.alpha ?? .zero
+            alpha: selectedShapeView?.alpha ?? .zero
         )
         shape.updateColor(color: newColor)
     }
     
     func didChangeAlphaSlider(_ canvasView: CanvasView, changedValue: Float) {
-        guard let rectangleView = selectedRectangleView,
-              let shape = plane.findShape(withID: rectangleView.rectangleID) else { return }
-        rectangleView.alpha = CGFloat(changedValue) / 10.0
+        guard let shapeView = selectedShapeView,
+              let shape = plane.findShape(withID: shapeView.shapeID) else { return }
+        shapeView.alpha = CGFloat(changedValue) / 10.0
         
         if let newAlpha = Alpha.from(floatValue: changedValue) {
             shape.updateAlpha(alpha: newAlpha)

@@ -86,7 +86,7 @@ final class CanvasView: UIView {
         ])
     }
     
-    func addRectangle(rectangleView: RectangleView) {
+    func addRectangle(rectangleView: BaseShapeView) {
         rectangleView.delegate = self
         planeView.addSubview(rectangleView)
         
@@ -102,9 +102,9 @@ final class CanvasView: UIView {
         return planeView.bounds.size
     }
     
-    func rectangleView(withID id: UUID) -> RectangleView? {
+    func rectangleView(withID id: UUID) -> BaseShapeView? {
         return planeView.subviews
-            .compactMap { $0 as? RectangleView }
+            .compactMap { $0 as? BaseShapeView }
             .first { $0.rectangleID == id }
     }
 }
@@ -119,8 +119,8 @@ extension CanvasView: ShapeCreatorButtonDelegate {
 
 // MARK: - RectangleTapGestureDelegate
 
-extension CanvasView: RectangleTapGestureDelegate {
-    func didTapRectangleGesture(_ rectangleView: RectangleView) {
+extension CanvasView: ShapeViewDelegate {
+    func didTapRectangleGesture(_ rectangleView: BaseShapeView) {
         delegate?.didTapGestureRectangle(self, rectangleID: rectangleView.rectangleID)
     }
     
