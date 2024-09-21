@@ -15,6 +15,14 @@ struct Size {
         self.width = width
         self.height = height
     }
+    
+    func widthValue() -> Double {
+        return self.width
+    }
+    
+    func heightValue() -> Double {
+        return self.height
+    }
 }
 
 extension Size: CustomStringConvertible {

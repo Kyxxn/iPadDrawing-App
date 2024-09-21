@@ -48,4 +48,12 @@ class BaseShape: Shapable, AlphaControllable, CustomStringConvertible  {
     func updateAlpha(alpha: Alpha) {
         self.alpha = alpha
     }
+    
+    func updateOrigin(x: Double, y: Double) {
+        self.origin = Point(x: x, y: y)
+    }
+    
+    func updateSize(width: Double, height: Double) {
+        self.size = Size(width: width, height: height)
+    }
 }
