@@ -15,6 +15,8 @@ final class CanvasViewController: UIViewController {
     private var factory: (any ShapeCreatable)?
     private let plane = Plane()
     private var selectedShapeView: BaseShapeView?
+    private var selectedShapeViewIndex: Int?
+    private var temporaryView: UIView?
     
     // MARK: View LifeCycle
     
@@ -101,8 +103,7 @@ extension CanvasViewController: CanvasViewDelegate {
     
     // MARK: Tap Gesture
     
-    func didTapGestureShapeView(_ canvasView: CanvasView,
-                                shapeID: UUID) {
+    func didTapGestureShapeView(_ canvasView: CanvasView, shapeID: UUID) {
         if let previousSelectedView = selectedShapeView {
             previousSelectedView.isSelected = false
         }
@@ -114,6 +115,62 @@ extension CanvasViewController: CanvasViewDelegate {
         selectedShapeView = shapeView
         
         canvasView.updateSideView(shape: shape)
+    }
+    
+    // MARK: Pan Gesture
+    
+    func didPanGestureShapeView(_ canvasView: CanvasView, shapeID: UUID, sender: UIPanGestureRecognizer) {
+        guard let shapeView = canvasView.shapeView(withID: shapeID) else { return }
+        let translation = sender.translation(in: canvasView)
+        
+        switch sender.state {
+        case .began:
+            createTemporaryView(shapeView: shapeView)
+        case .changed:
+            if let tempView = temporaryView {
+                tempView.center = CGPoint(
+                    x: tempView.center.x + translation.x,
+                    y: tempView.center.y + translation.y
+                )
+                sender.setTranslation(.zero, in: canvasView)
+                updateShapeModelPosition(origin: tempView.frame.origin)
+            }
+        case .ended, .cancelled:
+            shapeView.center = CGPoint(
+                x: shapeView.center.x + translation.x,
+                y: shapeView.center.y + translation.y
+            )
+            finishDragging(shapeView: shapeView)
+            sender.setTranslation(.zero, in: canvasView)
+        default:
+            break
+        }
+    }
+    
+    func createTemporaryView(shapeView: BaseShapeView) {
+        temporaryView = shapeView.snapshotView(afterScreenUpdates: false)
+        temporaryView?.alpha = 0.5
+        temporaryView?.center = shapeView.center
+        canvasView.addShape(tempView: temporaryView!)
+    }
+    
+    func finishDragging(shapeView: BaseShapeView) {
+        guard let temporaryView = temporaryView else { return }
+        temporaryView.removeFromSuperview()
+        
+        let origin = temporaryView.frame.origin
+        let size = temporaryView.frame.size
+        
+        shapeView.updateFrame(origin: Point(x: origin.x, y: origin.y),
+                              size: Size(width: size.width, height: size.height))
+        updateShapeModelPosition(origin: shapeView.frame.origin)
+    }
+    
+    func updateShapeModelPosition(origin: CGPoint) {
+        guard let index = selectedShapeViewIndex,
+              let shape = plane[index] else { return }
+        
+        shape.updateOrigin(x: origin.x, y: origin.y)
     }
     
     // MARK: SideView

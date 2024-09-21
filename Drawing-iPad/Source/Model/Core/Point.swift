@@ -15,6 +15,14 @@ struct Point: Equatable {
         self.x = x
         self.y = y
     }
+    
+    func xValue() -> Double {
+        return self.x
+    }
+    
+    func yValue() -> Double {
+        return self.y
+    }
 }
 
 extension Point: CustomStringConvertible {
