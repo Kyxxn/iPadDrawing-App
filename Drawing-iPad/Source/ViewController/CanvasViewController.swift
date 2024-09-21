@@ -133,7 +133,6 @@ extension CanvasViewController: CanvasViewDelegate {
                     y: tempView.center.y + translation.y
                 )
                 sender.setTranslation(.zero, in: canvasView)
-                print("changed: \(tempView.frame.origin)")
                 updateShapeModelPosition(origin: tempView.frame.origin)
             }
         case .ended, .cancelled:
@@ -172,7 +171,6 @@ extension CanvasViewController: CanvasViewDelegate {
               let shape = plane[index] else { return }
         
         shape.updateOrigin(x: origin.x, y: origin.y)
-        print("모델 데이터 좌표 업데이트: \(shape.origin)")
     }
     
     // MARK: SideView
