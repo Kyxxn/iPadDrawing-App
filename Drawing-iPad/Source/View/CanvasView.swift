@@ -10,6 +10,7 @@ import UIKit
 protocol CanvasViewDelegate: AnyObject {
     func didTapShapeCreatorButtonInCanvasView(_ canvasView: CanvasView, shapeCategory: ShapeCategory)
     func didTapGestureShapeView(_ canvasView: CanvasView, shapeID: UUID)
+    func didPanGestureShapeView(_ canvasView: CanvasView, shapeID: UUID, sender: UIPanGestureRecognizer)
     func didTapBackgroundColorChangeButton(_ canvasView: CanvasView)
     func didChangeAlphaSlider(_ canvasView: CanvasView, changedValue: Float)
 }
@@ -122,6 +123,10 @@ extension CanvasView: ShapeCreatorButtonDelegate {
 extension CanvasView: ShapeViewDelegate {
     func didTapShapeView(_ shapeView: BaseShapeView) {
         delegate?.didTapGestureShapeView(self, shapeID: shapeView.shapeID)
+    }
+    
+    func didPanShapeView(_ shapeView: BaseShapeView, sender: UIPanGestureRecognizer) {
+        delegate?.didPanGestureShapeView(self, shapeID: shapeView.shapeID, sender: sender)
     }
     
     func updateSideView(shape: BaseShape) {

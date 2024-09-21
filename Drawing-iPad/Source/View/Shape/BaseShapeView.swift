@@ -9,6 +9,7 @@ import UIKit
 
 protocol ShapeViewDelegate: AnyObject {
     func didTapShapeView(_ shapeView: BaseShapeView)
+    func didPanShapeView(_ shapeView: BaseShapeView, sender: UIPanGestureRecognizer)
 }
 
 class BaseShapeView: UIView {
@@ -23,7 +24,7 @@ class BaseShapeView: UIView {
     init(shapeID: UUID) {
         self.shapeID = shapeID
         super.init(frame: .zero)
-        setupConfiguration()
+        setupGestures()
     }
     
     @available(*, unavailable)
@@ -41,14 +42,22 @@ class BaseShapeView: UIView {
         }
     }
     
-    private func setupConfiguration() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleShapeTapped))
+    private func setupGestures() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleShapeTap))
         self.addGestureRecognizer(tapGesture)
+        
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handleShapePan))
+        self.addGestureRecognizer(panGesture)
     }
     
-    @objc private func handleShapeTapped() {
+    @objc private func handleShapeTap() {
         print("BaseShapeView - handleShapeTapped")
         delegate?.didTapShapeView(self)
+    }
+    
+    @objc private func handleShapePan(sender: UIPanGestureRecognizer) {
+        print("BaseShapeView - handleShapePan")
+        delegate?.didPanShapeView(self, sender: sender)
     }
     
     func setupFromModel(shape: BaseShape) {
@@ -62,6 +71,37 @@ class BaseShapeView: UIView {
                 blue: CGFloat(shape.color.blue) / 255.0,
                 alpha: shape.alpha.toCGFloat
             )
+        }
+    }
+    
+    func updateFrame(origin: Point, size: Size) {
+        print("\(origin), \(size)")
+
+        // origin은 부모한테 걸려있어서 안 뜨는 거 같음, 따로 설정
+        if let superview = self.superview {
+            if let leadingConstraint = findConstraint(in: superview, attribute: .leading) {
+                leadingConstraint.constant = origin.xValue()
+            }
+
+            if let topConstraint = findConstraint(in: superview, attribute: .top) {
+                topConstraint.constant = origin.yValue()
+            }
+        }
+
+        if let widthConstraint = findConstraint(attribute: .width) {
+            widthConstraint.constant = size.widthValue()
+        }
+
+        if let heightConstraint = findConstraint(attribute: .height) {
+            heightConstraint.constant = size.heightValue()
+        }
+    }
+    
+    // 부모 or 나한테 걸려있는 제약 찾기
+    func findConstraint(in view: UIView? = nil, attribute: NSLayoutConstraint.Attribute) -> NSLayoutConstraint? {
+        let targetView = view ?? self
+        return targetView.constraints.first {
+            ($0.firstItem as? UIView) == self && $0.firstAttribute == attribute
         }
     }
 }
