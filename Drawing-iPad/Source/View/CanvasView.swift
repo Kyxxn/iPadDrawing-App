@@ -8,8 +8,8 @@
 import UIKit
 
 protocol CanvasViewDelegate: AnyObject {
-    func didTapShapeButtonInCanvasView(_ canvasView: CanvasView)
-    func didTapGestureRectangle(_ canvasView: CanvasView, rectangleID: UUID)
+    func didTapShapeCreatorButtonInCanvasView(_ canvasView: CanvasView, shapeCategory: ShapeCategory)
+    func didTapGestureShapeView(_ canvasView: CanvasView, shapeID: UUID)
     func didTapBackgroundColorChangeButton(_ canvasView: CanvasView)
     func didChangeAlphaSlider(_ canvasView: CanvasView, changedValue: Float)
 }
@@ -21,7 +21,16 @@ final class CanvasView: UIView {
     
     // MARK: - UI Components
     
-    private let rectangleButton = ShapeCreatorButton(name: "사각형")
+    private let rectangleCreatorButton = ShapeCreatorButton(name: "사각형", shapeCategory: .rectangle)
+    private let photoCreatorButton = ShapeCreatorButton(name: "사진", shapeCategory: .photo)
+    private let creatorButtonStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.spacing = 5
+        stackView.distribution = .fillEqually
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    }()
     private let sideView = SideView()
     private let planeView: UIView = {
         let view = UIView()
@@ -33,7 +42,8 @@ final class CanvasView: UIView {
     
     init() {
         super.init(frame: .zero)
-        rectangleButton.delegate = self
+        rectangleCreatorButton.delegate = self
+        photoCreatorButton.delegate = self
         sideView.delegate = self
         setupConfiguration()
     }
@@ -46,38 +56,45 @@ final class CanvasView: UIView {
     // MARK: - Method
     
     private func setupConfiguration() {
-        self.addSubview(rectangleButton)
+        self.addSubview(creatorButtonStackView)
         self.addSubview(sideView)
         self.addSubview(planeView)
         self.translatesAutoresizingMaskIntoConstraints = false
+        [rectangleCreatorButton, photoCreatorButton].forEach {
+            creatorButtonStackView.addArrangedSubview($0)
+        }
         
         NSLayoutConstraint.activate([
-            rectangleButton.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-            rectangleButton.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor),
-            rectangleButton.widthAnchor.constraint(equalToConstant: 150),
-            rectangleButton.heightAnchor.constraint(equalToConstant: 150),
+            creatorButtonStackView.centerXAnchor.constraint(equalTo: self.centerXAnchor),
+            creatorButtonStackView.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor),
+            rectangleCreatorButton.widthAnchor.constraint(equalToConstant: 150),
+            rectangleCreatorButton.heightAnchor.constraint(equalToConstant: 150),
+            
+            photoCreatorButton.widthAnchor.constraint(equalToConstant: 150),
+            photoCreatorButton.heightAnchor.constraint(equalToConstant: 150),
+            
             
             sideView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
             sideView.widthAnchor.constraint(equalToConstant: 220),
             sideView.topAnchor.constraint(equalTo: self.topAnchor),
             sideView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
             
-            planeView.bottomAnchor.constraint(equalTo: self.rectangleButton.topAnchor),
+            planeView.bottomAnchor.constraint(equalTo: self.rectangleCreatorButton.topAnchor),
             planeView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             planeView.topAnchor.constraint(equalTo: self.topAnchor),
             planeView.trailingAnchor.constraint(equalTo: self.sideView.leadingAnchor)
         ])
     }
     
-    func addRectangle(rectangleView: RectangleView) {
-        rectangleView.delegate = self
-        planeView.addSubview(rectangleView)
+    func addShape(shapeView: BaseShapeView) {
+        shapeView.delegate = self
+        planeView.addSubview(shapeView)
         
         NSLayoutConstraint.activate([
-            rectangleView.leadingAnchor.constraint(equalTo: planeView.leadingAnchor, constant: rectangleView.frame.origin.x),
-            rectangleView.topAnchor.constraint(equalTo: planeView.topAnchor, constant: rectangleView.frame.origin.y),
-            rectangleView.widthAnchor.constraint(equalToConstant: rectangleView.frame.width),
-            rectangleView.heightAnchor.constraint(equalToConstant: rectangleView.frame.height)
+            shapeView.leadingAnchor.constraint(equalTo: planeView.leadingAnchor, constant: shapeView.frame.origin.x),
+            shapeView.topAnchor.constraint(equalTo: planeView.topAnchor, constant: shapeView.frame.origin.y),
+            shapeView.widthAnchor.constraint(equalToConstant: shapeView.frame.width),
+            shapeView.heightAnchor.constraint(equalToConstant: shapeView.frame.height)
         ])
     }
     
@@ -85,31 +102,30 @@ final class CanvasView: UIView {
         return planeView.bounds.size
     }
     
-    func rectangleView(withID id: UUID) -> RectangleView? {
+    func shapeView(withID id: UUID) -> BaseShapeView? {
         return planeView.subviews
-            .compactMap { $0 as? RectangleView }
-            .first { $0.rectangleID == id }
+            .compactMap { $0 as? BaseShapeView }
+            .first { $0.shapeID == id }
     }
 }
 
 // MARK: - ShapeCreatorButtonDelegate
 
 extension CanvasView: ShapeCreatorButtonDelegate {
-    func didTapShapeButton(_ button: ShapeCreatorButton) {
-        print("캔버스뷰 델리게이트")
-        delegate?.didTapShapeButtonInCanvasView(self)
+    func didTapShapeCreatorButton(_ button: ShapeCreatorButton, shapeCategory: ShapeCategory) {
+        delegate?.didTapShapeCreatorButtonInCanvasView(self, shapeCategory: shapeCategory)
     }
 }
 
 // MARK: - RectangleTapGestureDelegate
 
-extension CanvasView: RectangleTapGestureDelegate {
-    func didTapRectangleGesture(_ rectangleView: RectangleView) {
-        delegate?.didTapGestureRectangle(self, rectangleID: rectangleView.rectangleID)
+extension CanvasView: ShapeViewDelegate {
+    func didTapShapeView(_ shapeView: BaseShapeView) {
+        delegate?.didTapGestureShapeView(self, shapeID: shapeView.shapeID)
     }
     
-    func updateSideView(rectangle: Rectangle) {
-        sideView.updateRectangleInfo(rectangle: rectangle)
+    func updateSideView(shape: BaseShape) {
+        sideView.updateShapeInfo(shape: shape)
     }
 }
 

@@ -8,16 +8,19 @@
 import UIKit
 
 protocol ShapeCreatorButtonDelegate: AnyObject {
-    func didTapShapeButton(_ button: ShapeCreatorButton)
+    func didTapShapeCreatorButton(_ button: ShapeCreatorButton,
+                                  shapeCategory: ShapeCategory)
 }
 
 final class ShapeCreatorButton: UIButton {
     weak var delegate: ShapeCreatorButtonDelegate?
     
     private let name: String
+    private let shapeCategory: ShapeCategory
     
-    init(name: String) {
+    init(name: String, shapeCategory: ShapeCategory) {
         self.name = name
+        self.shapeCategory = shapeCategory
         super.init(frame: .zero)
         setupConfiguration()
     }
@@ -35,12 +38,11 @@ final class ShapeCreatorButton: UIButton {
         self.setTitle(self.name, for: .normal)
         self.setTitleColor(UIColor.black, for: .normal)
         self.addAction(UIAction { [weak self] _ in
-            print("버튼눌림")
-            self?.handleButtonTap()
+            self?.handleButtonTapped()
         }, for: .touchUpInside)
     }
     
-    private func handleButtonTap() {
-        delegate?.didTapShapeButton(self)
+    private func handleButtonTapped() {
+        delegate?.didTapShapeCreatorButton(self, shapeCategory: self.shapeCategory)
     }
 }

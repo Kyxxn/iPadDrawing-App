@@ -6,16 +6,17 @@
 //
 
 import UIKit
+import PhotosUI
 
 final class CanvasViewController: UIViewController {
-    // MARK: - Properties
+    // MARK: Properties
     
     private let canvasView = CanvasView()
-    private var factory: RectangleFactory?
+    private var factory: (any ShapeCreatable)?
     private let plane = Plane()
-    private var selectedRectangleView: RectangleView?
+    private var selectedShapeView: BaseShapeView?
     
-    // MARK: - View LifeCycle
+    // MARK: View LifeCycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,13 +27,7 @@ final class CanvasViewController: UIViewController {
         setupNotificationAddObserver()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        factory = RectangleFactory(viewBoundsSize: canvasView.planeViewBoundsSize())
-    }
-    
-    // MARK: - Method
+    // MARK: Method
     
     private func setupConfiguration() {
         view.addSubview(canvasView)
@@ -53,7 +48,7 @@ final class CanvasViewController: UIViewController {
         )
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(handleRectangleChanged),
+            selector: #selector(handleShapeChanged),
             name: .shapeUpdated,
             object: nil
         )
@@ -63,9 +58,9 @@ final class CanvasViewController: UIViewController {
         print("CanvasViewController handlePlaneChanged")
     }
     
-    @objc private func handleRectangleChanged(_ notification: Notification) {
-        if let updatedRectangle = notification.object as? Rectangle {
-            canvasView.updateSideView(rectangle: updatedRectangle)
+    @objc private func handleShapeChanged(_ notification: Notification) {
+        if let updatedShape = notification.object as? BaseShape {
+            canvasView.updateSideView(shape: updatedShape)
         }
     }
 }
@@ -73,54 +68,112 @@ final class CanvasViewController: UIViewController {
 // MARK: - CanvasViewDelegate
 
 extension CanvasViewController: CanvasViewDelegate {
-    func didTapShapeButtonInCanvasView(_ canvasView: CanvasView) {
-        guard let rectangle = factory?.makeRectangle() else { return }
-        plane.appendRectangle(rectangle: rectangle)
-        createRectangle(rectangle)
+    // MARK: ShapeModel & ShapeView Creator
+    
+    func didTapShapeCreatorButtonInCanvasView(_ canvasView: CanvasView, shapeCategory: ShapeCategory) {
+        switch shapeCategory {
+        case .rectangle:
+            let shape = createRectangle()
+            plane.appendShape(shape: shape)
+        case .photo:
+            presentPhotoPicker()
+        }
     }
     
-    private func createRectangle(_ rectangle: Rectangle) {
-        let rectangleView = RectangleView(rectangleID: rectangle.identifier)
-        rectangleView.setupFromModel(rectangle: rectangle)
-        canvasView.addRectangle(rectangleView: rectangleView)
+    private func createRectangle() -> BaseShape {
+        let factory = RectangleFactory(viewBoundsSize: canvasView.planeViewBoundsSize())
+        let rectangle = factory.makeShape()
+        let rectangleView = RectangleView(shapeID: rectangle.identifier)
+        rectangleView.setupFromModel(shape: rectangle)
+        canvasView.addShape(shapeView: rectangleView)
+        
+        return rectangle
     }
     
-    func didTapGestureRectangle(_ canvasView: CanvasView,
-                                rectangleID: UUID) {
-        if let previousSelectedView = selectedRectangleView {
+    private func presentPhotoPicker() {
+        var configuration = PHPickerConfiguration()
+        configuration.selectionLimit = 1
+        configuration.filter = .images
+        let phPickerViewController = PHPickerViewController(configuration: configuration)
+        phPickerViewController.delegate = self
+        present(phPickerViewController, animated: true)
+    }
+    
+    // MARK: Tap Gesture
+    
+    func didTapGestureShapeView(_ canvasView: CanvasView,
+                                shapeID: UUID) {
+        if let previousSelectedView = selectedShapeView {
             previousSelectedView.isSelected = false
         }
         
-        guard let rectangleView = canvasView.rectangleView(withID: rectangleID),
-              let rectangle = plane.rectangle(withID: rectangleID) else { return }
+        guard let shapeView = canvasView.shapeView(withID: shapeID),
+              let shape = plane.findShape(withID: shapeID) else { return }
         
-        rectangleView.isSelected = true
-        selectedRectangleView = rectangleView
+        shapeView.isSelected = true
+        selectedShapeView = shapeView
         
-        canvasView.updateSideView(rectangle: rectangle)
+        canvasView.updateSideView(shape: shape)
     }
     
+    // MARK: SideView
+    
     func didTapBackgroundColorChangeButton(_ canvasView: CanvasView) {
-        guard let rectangleView = selectedRectangleView,
-              let rectangle = plane.rectangle(withID: rectangleView.rectangleID) else { return }
+        guard let shapeView = selectedShapeView,
+              let shape = plane.findShape(withID: shapeView.shapeID) as? Rectangle else { return }
         let newColor = RandomFactory.makeRandomColor()
         
-        rectangleView.backgroundColor = UIColor(
+        shapeView.backgroundColor = UIColor(
             red: CGFloat(newColor.red) / 255.0,
             green: CGFloat(newColor.green) / 255.0,
             blue: CGFloat(newColor.blue) / 255.0,
-            alpha: selectedRectangleView?.alpha ?? .zero
+            alpha: selectedShapeView?.alpha ?? .zero
         )
-        rectangle.updateColor(color: newColor)
+        shape.updateColor(color: newColor)
     }
     
     func didChangeAlphaSlider(_ canvasView: CanvasView, changedValue: Float) {
-        guard let rectangleView = selectedRectangleView,
-              let rectangle = plane.rectangle(withID: rectangleView.rectangleID) else { return }
-        rectangleView.alpha = CGFloat(changedValue) / 10.0
+        guard let shapeView = selectedShapeView,
+              let shape = plane.findShape(withID: shapeView.shapeID) else { return }
+        shapeView.alpha = CGFloat(changedValue) / 10.0
         
         if let newAlpha = Alpha.from(floatValue: changedValue) {
-            rectangle.updateAlpha(alpha: newAlpha)
+            shape.updateAlpha(alpha: newAlpha)
         }
+    }
+}
+
+// MARK: - PHPickerViewControllerDelegate
+
+extension CanvasViewController: PHPickerViewControllerDelegate {
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        picker.dismiss(animated: true)
+        
+        guard let provider = results.first?.itemProvider else { return }
+        provider.loadObject(ofClass: UIImage.self) { [weak self] image, error in
+            guard let self = self,
+                  let selectedimage = image as? UIImage else { return }
+            
+            DispatchQueue.main.async {
+                guard let documents = FileManager.default.urls(for: .documentDirectory,
+                                                               in: .userDomainMask).first
+                else { return }
+                let fileName = UUID().uuidString + ".png"
+                let imageURL = documents.appending(path: fileName, directoryHint: .notDirectory)
+                self.createPhoto(image: selectedimage, imageURL: imageURL)
+            }
+        }
+    }
+    
+    private func createPhoto(image: UIImage, imageURL: URL) {
+        let factory = PhotoFactory(viewBoundsSize: canvasView.planeViewBoundsSize())
+        let photo = factory.makeShape(imageURL: imageURL)
+        
+        let photoImageView = UIImageView(image: image)
+        let photoView = PhotoView(imageView: photoImageView, shapeID: photo.identifier)
+        photoView.setupFromModel(shape: photo)
+        
+        plane.appendShape(shape: photo)
+        canvasView.addShape(shapeView: photoView)
     }
 }

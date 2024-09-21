@@ -87,10 +87,15 @@ final class SideView: UIView {
         alphaSlider.isEnabled = false
     }
     
-    func updateRectangleInfo(rectangle: Rectangle) {
-        backgroundColorChangeButton.setTitle(rectangle.color.toHexCode,
-                                             for: .normal)
+    func updateShapeInfo(shape: BaseShape) {
+        if let shape = shape as? Rectangle {
+            backgroundColorChangeButton.isEnabled = true
+            backgroundColorChangeButton.setTitle(shape.color.toHexCode, for: .normal)
+        } else {
+            backgroundColorChangeButton.setTitle("None", for: .normal)
+            backgroundColorChangeButton.isEnabled = false
+        }
         alphaSlider.isEnabled = true
-        alphaSlider.value = rectangle.alpha.toFloat
+        alphaSlider.value = shape.alpha.toFloat
     }
 }
